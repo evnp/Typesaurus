@@ -1,4 +1,4 @@
-define(['order!libs/jquery/jquery-min', 'order!libs/underscore/underscore-min', 'order!libs/backbone/backbone-min'],
+define(['order!libs/jquery/jquery-1.7.1.min', 'order!libs/underscore/underscore-min', 'order!libs/backbone/backbone-min'],
 function(){
   return {
     Backbone: Backbone.noConflict(),
