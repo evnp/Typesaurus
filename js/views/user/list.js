@@ -1,8 +1,10 @@
 define([
-    'jQuery',
-    'Underscore',
-    'Backbone',
-    'text!templates/users/list.html'
+    'jquery',
+    'underscore',
+    'backbone',
+
+    'text!templates/user/list.html'
+
 ], function($, _, Backbone, userListTemplate){
 
     var userListView = Backbone.View.extend({

@@ -1,7 +1,7 @@
 define([
-    'jQuery',
-    'Underscore',
-    'Backbone',
+    'jquery',
+    'underscore',
+    'backbone',
 
     'collections/words',
     'text!templates/editor.html'
@@ -17,7 +17,15 @@ define([
         },
 
         render: function(){
-            var compiledTemplate = _.template( editorTemplate, {} );
+            var data = {
+                instructions:
+                    'Type here to use the typesaurus. ' +
+                    'After you type a word, press\nctrl + shift + space\n' +
+                    'to show its synonyms.',
+                _: _
+            };
+
+            var compiledTemplate = _.template( editorTemplate, data );
             $("#editor").html( compiledTemplate ); 
         }
     });

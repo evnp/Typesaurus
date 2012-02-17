@@ -1,0 +1,5 @@
+<ul>
+  <% _.each(user, function(user){ %>
+   <li><%= user.get("name") %> - <%= user.get("email") %></li> 
+  <% }); %>
+</ul>

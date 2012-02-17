@@ -1,8 +1,10 @@
 define([
-    'jQuery',
-    'Underscore',
-    'Backbone',
+    'jquery',
+    'underscore',
+    'backbone',
+
     'models/word'
+
 ], function($, _, Backbone, wordModel){
 
     var wordCollection = Backbone.Collection.extend({

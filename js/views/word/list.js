@@ -1,7 +1,7 @@
 define([
-    'jQuery',
-    'Underscore',
-    'Backbone',
+    'jquery',
+    'underscore',
+    'backbone',
 
     'collections/words',
     'text!templates/word/list.html'
@@ -14,7 +14,7 @@ define([
 
         initialize: function(){
             this.collection = wordCollection;
-            this.collection.on("add", this.wordAdded);
+            this.collection.bind("add", this.wordAdded);
         },
 
         wordAdded: function(model) {
