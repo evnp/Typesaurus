@@ -22,7 +22,7 @@ define([
 
         render: function(){
             var data = {
-                word: this.word,
+                synonyms: this.word.synonyms,
                 _: _ // Underscore can be passed in so that
             };       // its functions are accessible on the template
 

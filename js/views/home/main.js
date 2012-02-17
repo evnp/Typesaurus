@@ -2,16 +2,18 @@ define([
     'jQuery',
     'Underscore',
     'Backbone',
-    'text!templates/home/main.html'
-], function($, _, Backbone, mainHomeTemplate){
 
-    var mainHomeView = Backbone.View.extend({
+    'text!templates/home/main.html'
+
+], function($, _, Backbone, homepageTemplate){
+
+    var homepageView = Backbone.View.extend({
         el: $("#page"),
 
         render: function(){
-            this.el.html(mainHomeTemplate);
+            this.el.html(homepageTemplate);
         }
     });
 
-    return new mainHomeView;
+    return new homepageView;
 });

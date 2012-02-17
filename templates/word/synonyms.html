@@ -1,0 +1,5 @@
+<ul>
+  <% _.each(synonyms, function(synonym){ %>
+    <li><%= synonym.get("rating") %> ~ <%= synonym.get("is") %></li> 
+  <% }); %>
+</ul>
