@@ -1,0 +1,52 @@
+body {
+    background-color: black;
+    height: 100%;
+}
+
+#content {
+    margin-top: 200px;
+}
+
+.centered {
+    width: 825px;
+    margin: 0 auto;
+}
+
+#header {
+    color: #6595A5;
+}
+
+textarea {
+    border: none;
+    outline: none;
+    background-color: black;
+    color: #7699A5;
+    font-size: 16px;
+}
+
+#editor {
+    position: relative;
+}
+
+/* Code to allow auto-resizing of editor */
+#text-area {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    width: 100%;
+}
+
+#text-copy {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    padding: 6px;   /* Same border+padding as text area. */
+    padding-bottom: 1.15em; /* A bit more than one additional line of text. */ 
+    visibility: hidden;
+    width: 100%;
+}

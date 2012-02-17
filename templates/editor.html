@@ -1,3 +1,8 @@
-<textarea rows="100" cols="60">
-    <%= instructions %>
+
+<textarea id="text-area" rows="3" cols="100">
+<%= instructions %>
 </textarea>
+<div id="text-copy"></div>
+
+<!-- Script to make the editor auto-resize -->
+<% setUpAutoResize(); %>
