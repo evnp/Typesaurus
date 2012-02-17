@@ -14,17 +14,16 @@ define([
 
         initialize: function(){
             this.collection = wordCollection;
-            this.collection.bind("add", this.exampleBind);
-            this.collection = wordCollection.add({ is: "liquify"});
+            this.collection.on("add", this.wordAdded);
         },
 
-        exampleBind: function( model ){
+        wordAdded: function(model) {
             //console.log(model);
         },
 
         render: function(){
             var data = {
-                projects: this.collection.models,
+                words: this.collection.models,
                 _: _
             };
 
