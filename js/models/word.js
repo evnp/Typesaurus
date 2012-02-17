@@ -6,6 +6,9 @@ define([
     var wordModel = Backbone.Model.extend({
 
         defaults: {
+            is:       '',
+            def:      '',
+            synonyms: []
         },
 
         initialize: function(){
