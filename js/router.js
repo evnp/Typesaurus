@@ -3,9 +3,10 @@ define([
     'underscore',
     'backbone',
 
+    'views/main',
     'views/word/list',
     'views/user/list'
-], function($, _, Backbone, wordListView, userListView){
+], function($, _, Backbone, mainView, wordListView, userListView){
 
     var AppRouter = Backbone.Router.extend({
 
@@ -15,7 +16,7 @@ define([
             'thesaurus/update/:original/:replacement': 'recordReplacement',
 
             // Default
-            '*actions': 'defaultAction'
+            '*actions': 'showMain'
         },
 
         lookUp: function(words) {
@@ -27,9 +28,8 @@ define([
             // Perform requests to update word ratings
         },
 
-        defaultAction: function(actions){
-            // We have no matching route, lets just log what the URL was
-            console.log('No route:', actions);
+        showMain: function(actions){
+            mainView.render();
         }
     });
 
