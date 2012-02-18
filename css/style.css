@@ -1,3 +1,10 @@
+/* Color Scheme */
+#header           { color: #2D768E; }
+#text-area        { color: #7CB4C6; }
+#definitions      { color: #E39543; }
+#definitions.text { color: #61ADC6; }
+
+
 body {
     background-color: black;
     height: 100%;
@@ -5,6 +12,7 @@ body {
 
 #content {
     margin-top: 200px;
+    font: 20px Inconsolata;
 }
 
 .centered {
@@ -12,23 +20,18 @@ body {
     margin: 0 auto;
 }
 
-#header {
-    color: #6595A5;
-}
-
 textarea {
     border: none;
     outline: none;
     background-color: black;
-    color: #7699A5;
-    font-size: 16px;
+    font: 20px Inconsolata;
 }
 
+/* Code to allow auto-resizing of editor */
 #editor {
     position: relative;
 }
 
-/* Code to allow auto-resizing of editor */
 #text-area {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
