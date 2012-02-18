@@ -10,11 +10,11 @@ define([
 
     var wordListView = Backbone.View.extend({
 
-        el: $("#page"),
+        el: $('#page'),
 
         initialize: function(){
             this.collection = wordCollection;
-            this.collection.bind("add", this.wordAdded);
+            this.collection.bind('add', this.wordAdded);
         },
 
         wordAdded: function(model) {
@@ -28,7 +28,7 @@ define([
             };
 
             var compiledTemplate = _.template( wordListTemplate, data );
-            $("#page").html( compiledTemplate ); 
+            $('#page').html( compiledTemplate ); 
         }
     });
 

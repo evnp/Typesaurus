@@ -1,0 +1,6 @@
+<h2>Definitions</h2>
+<ul>
+  <% _.each(definitions, function(word){ %>
+   <li><%= word.get("is") %><br><%= word.get("def") %></li> 
+  <% }); %>
+</ul>

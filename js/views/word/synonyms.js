@@ -9,11 +9,11 @@ define([
 
     var synonymView = Backbone.View.extend({
 
-        el: $(".synonyms"),
+        el: $('.synonyms'),
 
         initialize: function(word){
             this.word = word; // An instance of 'Word' model
-            this.word.on("change:[synonyms]", this.synonymsChanged);
+            this.word.on('change:[synonyms]', this.synonymsChanged);
         },
 
         synonymsChanged: function(model, value){
@@ -27,7 +27,7 @@ define([
             };       // its functions are accessible on the template
 
             var compiledTemplate = _.template( synonymsTemplate, data );
-            $("#page").html( compiledTemplate ); 
+            $('.synonyms').html( compiledTemplate ); 
         }
     });
 
