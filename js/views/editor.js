@@ -34,10 +34,6 @@ define([
             };
 
             var data = {
-                instructions:
-                    'Type here to use the thesaurus. ' +
-                    'After you type a word, press\nctrl + shift + space\n' +
-                    'to show its synonyms.',
                 setUpAutoResize: autoResizeFunction,
                 _: _
             };
