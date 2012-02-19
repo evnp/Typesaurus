@@ -1,8 +1,7 @@
-// Filename: bootstrap.js
-
 require.config({
     paths: {
         jquery: 'libs/jquery/jquery-min',
+        jqhotkeys: 'libs/jquery/plugins/jquery.hotkeys',
         underscore: 'libs/underscore/underscore-min',
         backbone: 'libs/backbone/backbone-optamd3-min',
 

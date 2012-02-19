@@ -2,11 +2,12 @@ define([
     'jquery',
     'underscore',
     'backbone',
+    'jqhotkeys',
 
     'collections/words',
     'text!templates/editor.html'
 
-], function($, _, Backbone, wordCollection, editorTemplate) {
+], function($, _, Backbone, jQueryHotkeys, wordCollection, editorTemplate) {
 
     var synonymView = Backbone.View.extend({
 
@@ -40,6 +41,11 @@ define([
 
             var compiledTemplate = _.template( editorTemplate, data );
             $('#editor').html( compiledTemplate );
+
+            // Bind Synonym-Menu Hotkey
+            $('#text-area').bind('keydown', 'ctrl+shift+space', function() {
+                alert('You found the hotkey!');
+            });
         }
     });
 
