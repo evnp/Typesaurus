@@ -16,7 +16,7 @@ define([
         el: $('#editor'),
 
         initialize: function(){
-            this.collection = wordCollection;
+            this.words = wordCollection;
         },
 
         render: function(){
@@ -29,12 +29,21 @@ define([
 
 
             // Bind synonym-menu hotkey
-            $('#text-area').bind('keydown', 'ctrl+shift+space', function() {
-                alert('Synonyms for the word under the cursor.');
-            });
-
+            this.bindHotkey();
 
             // Set up editor auto-resize
+            this.bindAutoResize();
+        },
+
+        bindHotkey: function() {
+            $('#text-area').bind('keydown', 'ctrl+shift+space', function() {
+                alert('Synonyms for the word under the cursor.');
+
+                synonymView.render(this.getCurrentWord(), this);
+            });
+        },
+
+        bindAutoResize: function() {
             $(function() {
                 $("#text-area").change(autoSize).keydown(autoSize).keyup(autoSize);
                 autoSize();
@@ -46,6 +55,10 @@ define([
                 var text = $("#text-area").val().replace(/\n/g, '<br/>');
                 $("#text-copy").html(text);
             }
+        },
+
+        getCurrentWord: function() {
+            // User jQuery Caret position tools
         }
     });
 

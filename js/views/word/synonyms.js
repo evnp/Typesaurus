@@ -11,8 +11,9 @@ define([
 
         el: $('.synonyms'),
 
-        initialize: function(word){
+        initialize: function(word, editor){
             if (word) {
+                this.editor = editor;
                 this.word = word; // An instance of 'Word' model
                 this.word.bind('change:[synonyms]', this.synonymsChanged);
             }
