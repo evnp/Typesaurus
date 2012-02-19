@@ -11,10 +11,10 @@ define([
 
         el: $('.synonyms'),
 
-        initialize: function(word, editor){
-            if (word) {
+        initialize: function(editor) {
+            if (editor) {
                 this.editor = editor;
-                this.word = word; // An instance of 'Word' model
+                this.word = editor.getCurrentWord();
                 this.word.bind('change:[synonyms]', this.synonymsChanged);
             }
         },
