@@ -1,6 +1,8 @@
 /* Color Scheme */
 #header            { color: #2D768E; }
 #text-area         { color: #7CB4C6; }
+#controls          { color: #7CB4C6; }
+input              { color: #7CB4C6; }
 #definitions       { color: #E39543; }
 #definitions.text  { color: #61ADC6; }
 
@@ -10,6 +12,7 @@
 /* Font */
 #content             { font: 20px Inconsolata; }
 textarea, #text-copy { font: 24px Inconsolata; }
+input                { font: 20px Inconsolata; }
 
 body {
     background-color: black;
@@ -29,6 +32,13 @@ textarea {
     border: none;
     outline: none;
     background-color: black;
+}
+
+input {
+    margin-top: 20px;
+    background-color: black;
+    outline: none;
+    border: 1px solid #2D768E;
 }
 
 /* Code to allow auto-resizing of editor */

@@ -12,8 +12,10 @@ define([
         el: $('.synonyms'),
 
         initialize: function(word){
-            this.word = word; // An instance of 'Word' model
-            this.word.on('change:[synonyms]', this.synonymsChanged);
+            if (word) {
+                this.word = word; // An instance of 'Word' model
+                this.word.bind('change:[synonyms]', this.synonymsChanged);
+            }
         },
 
         synonymsChanged: function(model, value){
