@@ -42,8 +42,16 @@ define([
             var editor = this;
 
             this.textarea.bind('keydown', 'ctrl+shift+space', function() {
-                alert(editor.getCaretPosition());
+                var wordInfo = editor.getCurrentWordInfo();
 
+                if (wordInfo) {
+                    var word  = wordInfo.word,
+                        start = wordInfo.start,
+                        line  = wordInfo.line;
+
+                    alert(line);
+                    console.log(word);
+                }
                 //synonymView.render(this);
             });
         },
@@ -64,8 +72,48 @@ define([
             }
         },
 
-        getCurrentWord: function() {
-            // User jQuery Caret position tools
+        getCurrentWordInfo: function() {
+            var lineInfo = this.getCurrentLineInfo(),
+                text = lineInfo.text,
+                start = end = lineInfo.caretPos,
+                wordChars  = /[a-zA-Z'-]/;
+
+            // Get the start and end boundries of the word
+            while (text[start - 1] &&
+                   wordChars.test(text[start - 1])) { start--; }
+
+            while (text[end] &&
+                   wordChars.test(text[end])) { end++; }
+
+            return start === end ? null : {
+                start: start,
+                line:  lineInfo.lineNo,
+                word:  text.substring(start, end)
+            };
+        },
+
+        getCurrentLineInfo: function () {
+            var text     = this.textarea.val(),
+                position = this.getCaretPosition(),
+                before   = text.substring(0, position),
+
+                // Get starting index of the line
+                before = text.substring(0, position),
+                start = before.search(/\n.*$/) + 1,
+
+                // Get ending index of the line
+                after = text.substring(position),
+                index = after.indexOf('\n'),
+                end = (index !== -1 ? index : after.length) + position,
+
+                // Get the number of the line
+                newlines = before.match(/\n/g);
+
+            return {
+                text:     text.substring(start, end),
+                caretPos: position - start,
+                lineNo:   newlines ? newlines.length : 0
+            };
         },
 
         getCaretPosition: function () {
