@@ -4,7 +4,7 @@ define([
 
 ], function(_, Backbone) {
 
-    var wordModel = Backbone.Model.extend({
+    var Word = Backbone.Model.extend({
 
         defaults: {
             is:       '',
@@ -32,8 +32,23 @@ define([
             }), 0, newSyn);
 
             this.set({ synonyms: synonyms });
+        },
+
+        getSynonyms: function(range) {
+            var synonyms = this.get('synonyms'),
+                list     = [];
+
+            if (!range || range > synonyms.length) {
+                range = synonyms.length;
+            }
+
+            for (var i = 0; i < range; i++) {
+                list.push(synonyms[i].is);
+            }
+
+            return list;
         }
     });
 
-    return wordModel;
+    return Word;
 });
