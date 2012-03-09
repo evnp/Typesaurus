@@ -5,16 +5,16 @@ define([
 
     'models/word'
 
-], function($, _, Backbone, wordModel){
+], function($, _, Backbone, Word){
 
-    var wordCollection = Backbone.Collection.extend({
+    var WordCollection = Backbone.Collection.extend({
 
-        model: wordModel,
+        model: Word,
 
         initialize: function(){
 
         }
     });
  
-    return new wordCollection;
+    return new WordCollection;
 });

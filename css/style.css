@@ -3,6 +3,7 @@
 #text-area         { color: #7CB4C6; }
 #controls          { color: #7CB4C6; }
 input              { color: #7CB4C6; }
+#synonyms          { color: #7CB4C6; }
 #definitions       { color: #E39543; }
 #definitions.text  { color: #61ADC6; }
 
@@ -10,9 +11,8 @@ input              { color: #7CB4C6; }
 :-moz-placeholder           { color: #7CB4C6; }
 
 /* Font */
-#content             { font: 20px Inconsolata; }
-textarea, #text-copy { font: 24px Inconsolata; }
-input                { font: 20px Inconsolata; }
+#content, input                 { font: 20px Inconsolata; }
+textarea, #text-copy, #synonyms { font: 24px Inconsolata; }
 
 body {
     background-color: black;
@@ -39,6 +39,22 @@ input {
     background-color: black;
     outline: none;
     border: 1px solid #2D768E;
+}
+
+#synonyms {
+    background-color: black;
+    border: 1px solid #2D768E;
+    margin-left: -27px;
+
+  -moz-box-shadow:    -1px 1px 20px -7px #fff;
+  -webkit-box-shadow: -1px 1px 20px -7px #fff;
+  box-shadow:         -1px 1px 20px -7px #fff;
+}
+
+#synonyms ul {
+    list-style-type: none;
+    margin: 4px;
+    padding: 0px;
 }
 
 /* Code to allow auto-resizing of editor */

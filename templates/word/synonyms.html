@@ -1,5 +1,5 @@
 <ul>
-  <% _.each(synonyms, function(synonym){ %>
-    <li><%= synonym.get("rating") %> | <%= synonym.get("is") %></li> 
+  <% var i = 1; _.each(synonyms, function(synonym){ %>
+    <li><%= i++ + ' ' + synonym %></li>
   <% }); %>
 </ul>

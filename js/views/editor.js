@@ -8,18 +8,21 @@ define([
     'views/word/synonyms',
     'text!templates/editor.html'
 
-], function($, _, Backbone, jQueryHotkeys,
-  wordCollection, synonymView, editorTemplate) {
+], function ($, _, Backbone, jQueryHotkeys,
+  WordCollection, synonymView, editorTemplate) {
 
     var editorView = Backbone.View.extend({
 
         el: $('#editor'),
 
-        initialize: function(){
-            this.words = wordCollection;
+        initialize: function () {
+            this.words = WordCollection;
+
+            this.charWidth  = 12;
+            this.lineHeight = 24;
         },
 
-        render: function(){
+        render: function () {
             var data = {
                 _: _
             };
@@ -31,32 +34,14 @@ define([
             // Get the actual HTMLElement out of the jQuery object
             this.textarea.el = this.textarea.get(0);
 
-            // Bind synonym-menu hotkey
-            this.bindHotkey();
-
             // Set up editor auto-resize
             this.bindAutoResize();
+
+            // Bind synonym-menu hotkey and other events
+            this.bindHotkeys();
         },
 
-        bindHotkey: function() {
-            var editor = this;
-
-            this.textarea.bind('keydown', 'ctrl+shift+space', function() {
-                var wordInfo = editor.getCurrentWordInfo();
-
-                if (wordInfo) {
-                    var word  = wordInfo.word,
-                        start = wordInfo.start,
-                        line  = wordInfo.line;
-
-                    alert(line);
-                    console.log(word);
-                }
-                //synonymView.render(this);
-            });
-        },
-
-        bindAutoResize: function() {
+        bindAutoResize: function () {
             var textarea = this.textarea
 
             $(function() {
@@ -72,7 +57,33 @@ define([
             }
         },
 
-        getCurrentWordInfo: function() {
+        bindHotkeys: function () {
+            var editor = this;
+
+            this.textarea.bind('keydown', 'ctrl+shift+space', function () {
+                var wordInfo = editor.getCurrentWordInfo();
+
+                if (wordInfo) {
+                    var word = editor.getWordObject(wordInfo.word),
+                           x = wordInfo.start * editor.charWidth,
+                           y = wordInfo.line * editor.lineHeight;
+
+                    synonymView.render(x, y, word);
+                }
+            });
+
+            var hideFunction = function () {
+                if (!synonymView.hidden) {
+                    synonymView.hide();
+                }
+            };
+
+            this.textarea.bind('keydown', 'space', hideFunction);
+            this.textarea.bind('keydown', 'return', hideFunction);
+            this.textarea.bind('keydown', 'backspace', hideFunction);
+        },
+
+        getCurrentWordInfo: function () {
             var lineInfo = this.getCurrentLineInfo(),
                 text = lineInfo.text,
                 start = end = lineInfo.caretPos,
@@ -112,7 +123,7 @@ define([
             return {
                 text:     text.substring(start, end),
                 caretPos: position - start,
-                lineNo:   newlines ? newlines.length : 0
+                lineNo:   newlines ? newlines.length + 1 : 1 
             };
         },
 
@@ -134,6 +145,35 @@ define([
                 pos = input.selectionStart;
 
             return pos;
+        },
+
+        getWordObject: function (wordStr) {
+            console.log(this.words);
+            var editor = this,
+                word = _.find(this.words, function (word) {
+                    return word.get('is') === wordStr;
+                });
+
+            if (!word) {
+                this.words.add({ is: wordStr, at: 0 });
+                word = this.words.at(0);
+
+                // Populate the new word's synonyms with data from the api
+                $.ajax('http://localhost:8080/thesaurus?word=' + wordStr, {
+                    success: function (data) {
+                        var wordData = data[wordStr];
+
+                        if (wordData) {
+                            word.set({ synonyms: wordData });
+                        } else {
+                            editor.handleNewWord(wordStr);
+                        }
+                    },
+                    error: function (request, stat, err) { console.log(err); },
+                });
+            }
+
+            return word;
         }
     });
 
