@@ -21,8 +21,8 @@ function handleWordQuery(request, response) {
 
             // For each word, find its entry in the database
             thesaurus.words.find({ is: words[i] }, function(error, result) {
-                if (error) {
-                    console.log('There was an query error: ' + prettify(error));
+                if (error || !result || !result[0] || ) {
+                    console.log('There was an query error: ' + prettify(error || result));
                 }
 
                 var word = result[0].is;
