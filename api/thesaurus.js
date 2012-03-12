@@ -21,24 +21,26 @@ function handleWordQuery(request, response) {
 
             // For each word, find its entry in the database
             thesaurus.words.find({ is: words[i] }, function(error, result) {
-                if (error || !result || !result[0] || !result[0].is) {
-                    console.log('There was an query error: ' + prettify(error || result));
-                }
+                if (error) {
+                    console.log('There was an query error: ' + prettify(error));
+                } else if (!result || !result[0] || !result[0].is) {
+                    console.log('Word not found in thesaurus.');
+                } else {
+                    var word = result[0].is;
 
-                var word = result[0].is;
+                    body[word] = processSearchResult(word, result);
 
-                body[word] = processSearchResult(word, result);
+                    // Increment the number of words that have been searched for
+                    // Once this matches the total number words given in the
+                    // query string, send the response.
+                    searchCount++;
+                    if (searchCount === words.length) {
+                        response.writeHead(200, {'Content-type': 'text/json'});
 
-                // Increment the number of words that have been searched for
-                // Once this matches the total number words given in the
-                // query string, send the response.
-                searchCount++;
-                if (searchCount === words.length) {
-                    response.writeHead(200, {'Content-type': 'text/json'});
-
-                    try { response.end(JSON.stringify(body)); }
-                    catch (e) {
-                        console.log('There was a parse error: ' + prettify(e));
+                        try { response.end(JSON.stringify(body)); }
+                        catch (e) {
+                            console.log('There was a parse error: ' + prettify(e));
+                        }
                     }
                 }
             });
