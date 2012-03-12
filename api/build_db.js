@@ -41,7 +41,7 @@ function(line, index, lineArray) {
 
     }, function(error, saved) {
         if (error || !saved) {
-            console.log('Word not saved! Error: ' + error);
+            console.log('Word not saved! ' + error);
             process.exit(1);
         }
         else {
