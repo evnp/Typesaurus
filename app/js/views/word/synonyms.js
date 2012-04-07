@@ -15,6 +15,17 @@ define([
             this.hidden = true;
         },
 
+        bindNav: function() {
+            $('#synonyms li').hover(function (e) {
+                var item = $(e.target);
+                if (e.type === 'mouseenter') {
+                    item.addClass('selected');
+                } else {
+                    item.removeClass('selected');
+                }
+            });
+        },
+
         synonymsChanged: function(model, value){
             alert('changing');
             this.render();
@@ -52,6 +63,8 @@ define([
                 'left': this.x,
                 'top' : this.y
             });
+
+            this.bindNav();
         },
 
         hide: function() {

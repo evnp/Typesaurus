@@ -148,15 +148,17 @@ define([
         },
 
         getWordObject: function (wordStr) {
-            console.log(this.words);
+            console.log('Looking for ' + wordStr);
             var editor = this,
-                word = _.find(this.words, function (word) {
+                word = editor.words.find(function (word) {
                     return word.get('is') === wordStr;
                 });
 
+            console.log('Found ' + word);
+
             if (!word) {
-                this.words.add({ is: wordStr, at: 0 });
-                word = this.words.at(0);
+                editor.words.add({ is: wordStr }, { at: 0 });
+                word = editor.words.at(0);
 
                 // Populate the new word's synonyms with data from the api
                 $.ajax('http://localhost:8080/thesaurus?word=' + wordStr, {
@@ -172,6 +174,8 @@ define([
                     error: function (request, stat, err) { console.log(err); },
                 });
             }
+
+            console.log(word.get('is'));
 
             return word;
         }

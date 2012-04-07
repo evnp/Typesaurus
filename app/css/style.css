@@ -7,6 +7,11 @@ input              { color: #7CB4C6; }
 #definitions       { color: #E39543; }
 #definitions.text  { color: #61ADC6; }
 
+#synonyms .selected {
+    color: #ffffff;
+    background-color: #2D768E;
+}
+
 ::-webkit-input-placeholder { color: #7CB4C6; }
 :-moz-placeholder           { color: #7CB4C6; }
 
