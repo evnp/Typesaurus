@@ -17,6 +17,7 @@ define([
 
         initialize: function () {
             this.words = WordCollection;
+            this.synLists = []; // Will contain all the synonym list views that are created
 
             this.charWidth  = 12;
             this.lineHeight = 24;
@@ -37,6 +38,10 @@ define([
             // Set up editor auto-resize
             this.bindAutoResize();
 
+            // Set up synonymView references
+            synonymView.editor = this;
+            synonymView.el = $($('#synonyms-container')[0]);
+
             // Bind synonym-menu hotkey and other events
             this.bindHotkeys();
         },
@@ -44,7 +49,7 @@ define([
         bindAutoResize: function () {
             var textarea = this.textarea
 
-            $(function() {
+            $(function () {
                 textarea.change(autoSize).keydown(autoSize).keyup(autoSize);
                 autoSize();
             });
@@ -61,6 +66,8 @@ define([
             var editor = this;
 
             this.textarea.bind('keydown', 'ctrl+shift+space', function () {
+                synonymView.clear(0);
+
                 var wordInfo = editor.getCurrentWordInfo();
 
                 if (wordInfo) {
@@ -68,19 +75,15 @@ define([
                            x = wordInfo.start * editor.charWidth,
                            y = wordInfo.line * editor.lineHeight;
 
-                    synonymView.render(x, y, word);
+                    synonymView.render(x, y, word, 0);
                 }
             });
 
-            var hideFunction = function () {
-                if (!synonymView.hidden) {
-                    synonymView.hide();
-                }
-            };
+            var clearFunction = function () { synonymView.clear(0); }
 
-            this.textarea.bind('keydown', 'space', hideFunction);
-            this.textarea.bind('keydown', 'return', hideFunction);
-            this.textarea.bind('keydown', 'backspace', hideFunction);
+            this.textarea.bind('keydown', 'space',     clearFunction);
+            this.textarea.bind('keydown', 'return',    clearFunction);
+            this.textarea.bind('keydown', 'backspace', clearFunction);
         },
 
         getCurrentWordInfo: function () {

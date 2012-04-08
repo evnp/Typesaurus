@@ -7,16 +7,41 @@ define([
 
 ], function($, _, Backbone, synonymsTemplate) {
 
-    var synonymView = Backbone.View.extend({
+    var SynonymView = Backbone.View.extend({
 
-        el: $('#synonyms'),
+        render: function(x, y, word, level){
 
-        initialize: function() {
-            this.hidden = true;
+            this.word = word;
+            this.word.bind('change:synonyms', this.synonymsChanged);
+
+            var data = {
+                    synonyms: this.word.getSynonyms(5),
+                    _: _
+                },
+                compiledTemplate = _.template(synonymsTemplate,
+                    data).replace('level-number', level);
+
+            this.el.html(this.el.html() + compiledTemplate);
+
+            // Get the new synonym list element
+            var list = this.$('#' + level);
+
+            // Position the list
+            list.css({
+                'left': x,
+                'top' : y
+            });
+
+            // Set up navigation on the list
+            if (level === 0) {this.bindNav(list, x, y, level);}
+
+            return this;
         },
 
-        bindNav: function() {
-            $('#synonyms li').hover(function (e) {
+        bindNav: function(list, x, y, level) {
+            var synonymView = this;
+
+            $('li', list).hover(function (e) {
                 var item = $(e.target);
                 if (e.type === 'mouseenter') {
                     item.addClass('selected');
@@ -24,54 +49,33 @@ define([
                     item.removeClass('selected');
                 }
             });
+
+            $('li', list).click(function (e) {
+                var item = $(e.target),
+                    html = item.html().split(' '),
+                    rank = Number(html[0]),
+                    word = synonymView.editor.getWordObject(html[1]);
+
+                synonymView.render(x + list.width() + 1,
+                                   y + (rank * item.height()),
+                                   word,
+                                   level + 1);
+            });
         },
 
         synonymsChanged: function(model, value){
-            alert('changing');
-            this.render();
+            //this.render();
         },
 
-        render: function(x, y, word){
-
-            // if new values are given, use them.
-            if (x) { this.x = x; }
-            if (y) { this.y = y; }
-            if (word) {
-                if (this.word) { // If an old word was set, remove its bindings
-                    this.word.unbind('change:[synonyms]');
+        clear: function (level) { // Remove all synonym lists at levels >= 'level'
+            _.each($('.synonyms'), function (list) {
+                var $list = $(list);
+                if (Number($list.attr('id')) >= level) {
+                    $list.remove();
                 }
-
-                this.word = word;
-                this.word.bind('change:[synonyms]', this.synonymsChanged);
-            }
-
-            var element = $('#synonyms'),
-
-                data = {
-                    synonyms: this.word.getSynonyms(5),
-                    _: _ // Underscore can be passed in so that
-                };       // its functions are accessible on the template
-
-
-            var compiledTemplate = _.template( synonymsTemplate, data );
-            element.html( compiledTemplate );
-
-            // Position and show the new synonym element
-            this.hidden = false;
-            element.css({
-                'display': 'inline',
-                'left': this.x,
-                'top' : this.y
             });
-
-            this.bindNav();
-        },
-
-        hide: function() {
-            $('#synonyms').css('display', 'none');
-            this.hidden = true;
         }
     });
 
-    return new synonymView;
+    return new SynonymView;
 });

@@ -3,11 +3,11 @@
 #text-area         { color: #7CB4C6; }
 #controls          { color: #7CB4C6; }
 input              { color: #7CB4C6; }
-#synonyms          { color: #7CB4C6; }
+.synonyms          { color: #7CB4C6; }
 #definitions       { color: #E39543; }
 #definitions.text  { color: #61ADC6; }
 
-#synonyms .selected {
+.synonyms .selected {
     color: #ffffff;
     background-color: #2D768E;
 }
@@ -46,7 +46,7 @@ input {
     border: 1px solid #2D768E;
 }
 
-#synonyms {
+.synonyms {
     background-color: black;
     border: 1px solid #2D768E;
     margin-left: -27px;
@@ -56,7 +56,7 @@ input {
   box-shadow:         -1px 1px 20px -7px #fff;
 }
 
-#synonyms ul {
+.synonyms ul {
     list-style-type: none;
     margin: 4px;
     padding: 0px;
