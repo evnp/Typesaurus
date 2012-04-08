@@ -21,11 +21,12 @@ define([
                 compiledTemplate = _.template(synonymsTemplate,
                     data).replace('level-number', level);
 
-            this.el.html(this.el.html() + compiledTemplate);
+            this.el.append(compiledTemplate);
 
             // Get the new synonym list element
             var list = this.$('#' + level);
 
+            console.log('positioning');
             // Position the list
             list.css({
                 'left': x,
@@ -33,7 +34,7 @@ define([
             });
 
             // Set up navigation on the list
-            if (level === 0) {this.bindNav(list, x, y, level);}
+            this.bindNav(list, x, y, level);
 
             return this;
         },
@@ -51,13 +52,21 @@ define([
             });
 
             $('li', list).click(function (e) {
+
+                // Clear all lists lower than the one that was clicked
+                synonymView.clear(level + 1);
+
                 var item = $(e.target),
                     html = item.html().split(' '),
                     rank = Number(html[0]),
                     word = synonymView.editor.getWordObject(html[1]);
 
+                console.log('x: ' + (x + list.width() + 1) + '\ny: '
+                    + (y + ((rank - 1) * item.height())));
+                console.log(list.width());
+
                 synonymView.render(x + list.width() + 1,
-                                   y + (rank * item.height()),
+                                   y + ((rank - 1) * item.height()),
                                    word,
                                    level + 1);
             });
