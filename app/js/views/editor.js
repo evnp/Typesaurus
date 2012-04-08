@@ -84,6 +84,8 @@ define([
             this.textarea.bind('keydown', 'space',     clearFunction);
             this.textarea.bind('keydown', 'return',    clearFunction);
             this.textarea.bind('keydown', 'backspace', clearFunction);
+
+            $(document).click(clearFunction);
         },
 
         getCurrentWordInfo: function () {

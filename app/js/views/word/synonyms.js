@@ -10,9 +10,7 @@ define([
     var SynonymView = Backbone.View.extend({
 
         render: function(x, y, word, level){
-
             this.word = word;
-            this.word.bind('change:synonyms', this.synonymsChanged);
 
             var data = {
                     synonyms: this.word.getSynonyms(5),
@@ -23,10 +21,9 @@ define([
 
             this.el.append(compiledTemplate);
 
-            // Get the new synonym list element
-            var list = this.$('#' + level);
+            var list = this.$('#' + level), // Get the new synonym list element
+                view = this;
 
-            console.log('positioning');
             // Position the list
             list.css({
                 'left': x,
@@ -36,11 +33,27 @@ define([
             // Set up navigation on the list
             this.bindNav(list, x, y, level);
 
+            // Set up word synonym update event
+            this.word.bind('change:synonyms', function () {
+                var ul = $('ul', list),
+                     i = 1;
+
+                ul.empty();
+
+                _.each(view.word.getSynonyms(5), function (synonym) {
+                    ul.append('<li>' + i + ' ' + synonym + '</li>');
+                    i++;
+                });
+
+                // New li's were created; reconfigure events
+                view.bindNav(list, x, y, level);
+            });
+
             return this;
         },
 
         bindNav: function(list, x, y, level) {
-            var synonymView = this;
+            var view = this;
 
             $('li', list).hover(function (e) {
                 var item = $(e.target);
@@ -52,28 +65,25 @@ define([
             });
 
             $('li', list).click(function (e) {
-
                 // Clear all lists lower than the one that was clicked
-                synonymView.clear(level + 1);
+                view.clear(level + 1);
 
                 var item = $(e.target),
                     html = item.html().split(' '),
                     rank = Number(html[0]),
-                    word = synonymView.editor.getWordObject(html[1]);
+                    word = view.editor.getWordObject(html[1]);
 
-                console.log('x: ' + (x + list.width() + 1) + '\ny: '
-                    + (y + ((rank - 1) * item.height())));
-                console.log(list.width());
-
-                synonymView.render(x + list.width() + 1,
+                view.render(x + list.width() + 1,
                                    y + ((rank - 1) * item.height()),
                                    word,
                                    level + 1);
-            });
-        },
 
-        synonymsChanged: function(model, value){
-            //this.render();
+                return false; // Prevents bubbling the event up to the document,
+                              // which would clear all synonym lists
+            });
+
+            // Clear all lists on any outside-list click
+            $(document).click(function () { view.clear(0); });
         },
 
         clear: function (level) { // Remove all synonym lists at levels >= 'level'
