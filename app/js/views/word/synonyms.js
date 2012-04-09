@@ -31,7 +31,7 @@ define([
             });
 
             // Set up navigation on the list
-            this.bindNav(list, x, y, level);
+            this.setUpNavigation(list, x, y, level);
 
             // Set up word synonym update event
             this.word.bind('change:synonyms', function () {
@@ -46,53 +46,105 @@ define([
                 });
 
                 // New li's were created; reconfigure events
-                view.bindNav(list, x, y, level);
+                view.setUpHoverSelect(list);
+
+                // Maintain the correct item selection through synonym update
+                if (view.selectedListId === level) {
+                    view.select($('li:nth-child(' + (view.selectedItemRank - 1) + ')', ul),
+                                  level,
+                                  view.selectedItemRank);
+                }
             });
 
-            return this;
+            return list;
         },
 
-        bindNav: function(list, x, y, level) {
+        setUpHoverSelect: function (list) {
             var view = this;
 
             $('li', list).hover(function (e) {
                 var item = $(e.target);
                 if (e.type === 'mouseenter') {
+                    if (view.selectedItem) {
+                        view.selectedItem.removeClass('selected');
+                    }
                     item.addClass('selected');
-                } else {
-                    item.removeClass('selected');
+                    view.selectedItem = item;
                 }
             });
+        },
 
-            $('li', list).click(function (e) {
-                // Clear all lists lower than the one that was clicked
+        setUpNavigation: function (list, x, y, level) {
+            var view = this;
+
+            $(list).bind('keydown', 'up', function (e) {
+                var item = view.selectedItem.prev();
+                if (item) { view.select(item); }
+            });
+
+            $(list).bind('keydown', 'down', function (e) {
+                var item = view.selectedItem.next();
+                if (item && item[0]) { view.select(item); }
+                else { view.select($('ul li:first-child', e.target), level + 1, 1); }
+            });
+
+            function activateSelected() {
+                // Clear all lists lower than the one containing the selected item
                 view.clear(level + 1);
 
-                var item = $(e.target),
+                var item = view.selectedItem,
                     html = item.html().split(' '),
                     rank = Number(html[0]),
                     word = view.editor.getWordObject(html[1]);
+                    nestedList = view.render(x + list.width() + 1,
+                                             y + ((rank - 1) * item.height()),
+                                             word,
+                                             level + 1);
 
-                view.render(x + list.width() + 1,
-                                   y + ((rank - 1) * item.height()),
-                                   word,
-                                   level + 1);
+                nestedList.focus();
+                view.select($('ul li:first-child', nestedList), level + 1, 1);
 
                 return false; // Prevents bubbling the event up to the document,
                               // which would clear all synonym lists
+            }
+
+            $(list).click(activateSelected);
+            $(list).bind('keydown', 'right', activateSelected);
+
+            $(list).bind('keydown', 'left', function () {
+                var previous = view.clear(level);
+                if (previous) { previous.focus(); }
+                else { view.editor.textarea.focus(); }
             });
 
             // Clear all lists on any outside-list click
             $(document).click(function () { view.clear(0); });
         },
 
+        select: function(item, listId, rank) {
+            if (this.selectedItem) { this.selectedItem.removeClass('selected'); }
+            if (item) { item.addClass('selected'); }
+
+            this.selectedItem = item;
+            this.selectedListId = listId;
+            this.selectedItemRank = rank;
+        },
+
         clear: function (level) { // Remove all synonym lists at levels >= 'level'
+            var lastRemaining;
+
             _.each($('.synonyms'), function (list) {
-                var $list = $(list);
-                if (Number($list.attr('id')) >= level) {
+                var $list = $(list),
+                    id = Number($list.attr('id'));
+
+                if (id >= level) {
                     $list.remove();
+                } else if (id === (level - 1)) {
+                    lastRemaining = $list;
                 }
             });
+
+            return lastRemaining;
         }
     });
 
