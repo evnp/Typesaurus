@@ -9,6 +9,11 @@ define([
 
     var SynonymView = Backbone.View.extend({
 
+        initialize: function () {
+            this.sel  = {}; // Keeps track of selected item
+            this.path = []; // Keeps track of path through active lists
+        },
+
         render: function(x, y, word, level){
             this.word = word;
 
@@ -49,10 +54,9 @@ define([
                 view.setUpHoverSelect(list);
 
                 // Maintain the correct item selection through synonym update
-                if (view.selectedListId === level) {
-                    view.select($('li:nth-child(' + (view.selectedItemRank - 1) + ')', ul),
-                                  level,
-                                  view.selectedItemRank);
+                if (view.sel.inList === level) {
+                    view.select($('li:nth-child(' + (view.sel.rank) + ')', ul),
+                                level, view.sel.rank);
                 }
             });
 
@@ -65,11 +69,11 @@ define([
             $('li', list).hover(function (e) {
                 var item = $(e.target);
                 if (e.type === 'mouseenter') {
-                    if (view.selectedItem) {
-                        view.selectedItem.removeClass('selected');
+                    if (view.sel.item) {
+                        view.sel.item.removeClass('selected');
                     }
                     item.addClass('selected');
-                    view.selectedItem = item;
+                    view.sel.item = item;
                 }
             });
         },
@@ -78,12 +82,12 @@ define([
             var view = this;
 
             $(list).bind('keydown', 'up', function (e) {
-                var item = view.selectedItem.prev();
+                var item = view.sel.item.prev();
                 if (item) { view.select(item); }
             });
 
             $(list).bind('keydown', 'down', function (e) {
-                var item = view.selectedItem.next();
+                var item = view.sel.item.next();
                 if (item && item[0]) { view.select(item); }
                 else { view.select($('ul li:first-child', e.target), level + 1, 1); }
             });
@@ -92,14 +96,13 @@ define([
                 // Clear all lists lower than the one containing the selected item
                 view.clear(level + 1);
 
-                var item = view.selectedItem,
+                var item = view.sel.item,
                     html = item.html().split(' '),
                     rank = Number(html[0]),
                     word = view.editor.getWordObject(html[1]);
                     nestedList = view.render(x + list.width() + 1,
                                              y + ((rank - 1) * item.height()),
-                                             word,
-                                             level + 1);
+                                             word, level + 1);
 
                 nestedList.focus();
                 view.select($('ul li:first-child', nestedList), level + 1, 1);
@@ -122,16 +125,18 @@ define([
         },
 
         select: function(item, listId, rank) {
-            if (this.selectedItem) { this.selectedItem.removeClass('selected'); }
+            if (this.sel.item) { this.sel.item.removeClass('selected'); }
             if (item) { item.addClass('selected'); }
 
-            this.selectedItem = item;
-            this.selectedListId = listId;
-            this.selectedItemRank = rank;
+            this.sel.item = item;
+            this.sel.inList = listId;
+            this.sel.rank = rank;
+
+            console.log(this.sel);
         },
 
         clear: function (level) { // Remove all synonym lists at levels >= 'level'
-            var lastRemaining;
+            var lastRemaining;    // Returns lowest remaining list
 
             _.each($('.synonyms'), function (list) {
                 var $list = $(list),
