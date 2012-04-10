@@ -160,13 +160,10 @@ define([
         },
 
         getWordObject: function (wordStr) {
-            console.log('Looking for ' + wordStr);
             var editor = this,
                 word = editor.words.find(function (word) {
                     return word.get('is') === wordStr;
                 });
-
-            console.log('Found ' + word);
 
             if (!word) {
                 editor.words.add({ is: wordStr }, { at: 0 });
@@ -186,8 +183,6 @@ define([
                     error: function (request, stat, err) { console.log(err); },
                 });
             }
-
-            console.log(word.get('is'));
 
             return word;
         }

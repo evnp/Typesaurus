@@ -11,6 +11,7 @@ define([
 
         initialize: function () {
             this.sel  = {}; // Keeps track of selected item
+            this.path = []; // Keeps track of path through active lists
         },
 
         render: function(x, y, word, level){
@@ -54,7 +55,7 @@ define([
                 view.setUpHoverSelect(list);
 
                 // Maintain the correct item selection through synonym update
-                if (view.sel.list.attr('id') === list.attr('id')) {
+                if (view.sel.list && view.sel.list.attr('id') === list.attr('id')) {
                     view.select($('li:nth-child(' + (view.sel.rank) + ')', ul),
                                 view.sel.rank);
                 }
@@ -93,6 +94,9 @@ define([
                 // Clear all lists lower than the one containing the selected item
                 view.clear(level + 1);
 
+                // Store the activated word's rank, so it can be returned to later.
+                view.path.push(view.sel.rank);
+
                 var item = view.sel.item,
                     word = view.editor.getWordObject(item.html().match(/[a-zA-Z]+.+$/)[0]);
                     nestedList = view.render(x + list.width() + 1,
@@ -109,8 +113,10 @@ define([
             $(list).bind('keydown', 'right', activateSelected);
 
             $(list).bind('keydown', 'left', function () {
-                var previous = view.clear(level);
-                if (previous) { view.select($('ul li:first-child', previous), 1, previous); }
+                var previous = view.clear(level),
+                    prevItem = $('ul li:nth-child(' + view.path.pop() + ')', previous);
+
+                if (previous) { view.select(prevItem, 1, previous); }
                 else { view.editor.textarea.focus(); }
             });
 
@@ -125,7 +131,6 @@ define([
             this.sel.item = item;
             this.sel.rank = rank;
 
-            console.log(this.sel.list);
             if (list) { this.sel.list = list; }
             this.sel.list.focus();
         },
