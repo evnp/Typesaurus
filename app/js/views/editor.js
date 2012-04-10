@@ -83,11 +83,7 @@ define([
             this.textarea.bind('keydown', 'down', function () {
                 var list = $('#0', editor.synonyms.el);
                 if (list) { var item = $('ul li:first-child', list); }
-
-                if (item) {
-                    editor.synonyms.select(item, 0, 1);
-                    list.focus();
-                }
+                if (item) { editor.synonyms.select(item, 1, list); }
             });
 
             var clearFunction = function () {
