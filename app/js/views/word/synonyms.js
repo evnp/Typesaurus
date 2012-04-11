@@ -123,12 +123,12 @@ define([
             // Bind number keys
             for (var i = 1; i < 6; i++) {
                 $(list).bind('keydown', i.toString(), function (e) {
-                    var numberPressed = e.which - 48;
-                    if (numberPressed === view.sel.rank) {
+                    var numPressed = e.which - 48;
+                    if (numPressed === view.sel.rank) {
                         console.log('Inserting word:' + view.sel.item.html());
                     } else {
-                        var item = $('ul li:nth-child(' + numberPressed + ')', e.target);
-                        view.select(item, numberPressed);
+                        var item = $('ul li:nth-child(' + numPressed + ')', e.target);
+                        view.select(item, numPressed);
                     }
                 })
             }

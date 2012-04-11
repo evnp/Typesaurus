@@ -82,9 +82,26 @@ define([
             // Transfer control from texarea to synonym list on 'down' arrow
             this.textarea.bind('keydown', 'down', function () {
                 var list = $('#0', editor.synonyms.el);
-                if (list) { var item = $('ul li:first-child', list); }
-                if (item) { editor.synonyms.select(item, 1, list); }
+                if (list) {
+                    editor.synonyms.select($('ul li:first-child'), 1, list);
+                    return false;
+                } else { return true; }
             });
+
+            // Transfer control from texarea to synonym list on number key press
+            for (var i = 1; i < 6; i++) {
+                this.textarea.bind('keydown', i.toString(), function (e) {
+                    var list = $('#0', editor.synonyms.el);
+
+                    if (list) {
+                        var numPressed = e.which - 48,
+                            item = $('ul li:nth-child(' + numPressed + ')', list);
+
+                        editor.synonyms.select(item, numPressed, list);
+                        return false;
+                    } else { return true; }
+                });
+            }
 
             var clearFunction = function () {
                 synonymView.clear(0);
