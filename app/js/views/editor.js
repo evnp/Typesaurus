@@ -31,6 +31,7 @@ define([
             var compiledTemplate = _.template( editorTemplate, data );
             $('#editor').html( compiledTemplate );
             this.textarea = $('#text-area');
+            this.textarea.focus();
 
             // Get the actual HTMLElement out of the jQuery object
             this.textarea.el = this.textarea.get(0);
@@ -121,7 +122,11 @@ define([
                                    '([\\s\\S]*)'),
                 match = this.textarea.val().match(regex);
 
-            if (match) { this.textarea.val(match[1] + wordStr + match[2]); }
+            if (match) {
+                var replacedText = match[1] + wordStr;
+                this.textarea.val(replacedText + match[2]);
+                this.setCaretPosition(replacedText.length);
+            } else { this.textarea.focus(); }
         },
 
         getCurrentWordInfo: function () {
@@ -186,6 +191,21 @@ define([
                 pos = input.selectionStart;
 
             return pos;
+        },
+
+        setCaretPosition: function(index) {
+            this.textarea.focus();
+            var el = this.textarea.el;
+
+            if (el.setSelectionRange) {
+                el.setSelectionRange(index, index);
+            } else if (el.createTextRange) {
+                var range = input.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', index);
+                range.moveStart('character', index);
+                range.select();
+            }
         },
 
         getWordObject: function (wordStr) {

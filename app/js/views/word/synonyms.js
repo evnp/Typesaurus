@@ -123,6 +123,7 @@ define([
                         var item = $('ul li:nth-child(' + numPressed + ')', e.target);
                         view.select(item, numPressed);
                     }
+                    return false;
                 })
             }
 
