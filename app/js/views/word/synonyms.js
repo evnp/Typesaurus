@@ -98,7 +98,7 @@ define([
                 view.path.push(view.sel.rank);
 
                 var item = view.sel.item,
-                    word = view.editor.getWordObject(item.html().match(/[a-zA-Z]+.+$/)[0]);
+                    word = view.editor.getWordObject(item.html().match(/[a-zA-Z]+.+$/)[0]),
                     nestedList = view.render(x + list.width() + 1,
                                              y + ((view.sel.rank - 1) * item.height()),
                                              word, level + 1);
@@ -119,6 +119,19 @@ define([
                 if (previous) { view.select(prevItem, 1, previous); }
                 else { view.editor.textarea.focus(); }
             });
+
+            // Bind number keys
+            for (var i = 1; i < 6; i++) {
+                $(list).bind('keydown', i.toString(), function (e) {
+                    var numberPressed = e.which - 48;
+                    if (numberPressed === view.sel.rank) {
+                        console.log('Inserting word:' + view.sel.item.html());
+                    } else {
+                        var item = $('ul li:nth-child(' + numberPressed + ')', e.target);
+                        view.select(item, numberPressed);
+                    }
+                })
+            }
 
             // Clear all lists on any outside-list click
             $(document).click(function () { view.clear(0); });
