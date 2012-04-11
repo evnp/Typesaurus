@@ -75,7 +75,7 @@ define([
                            x = wordInfo.start * editor.charWidth,
                            y = wordInfo.line * editor.lineHeight;
 
-                    editor.synonyms.render(x, y, word, 0);
+                    editor.synonyms.render(word, 0, x, y);
                 }
             });
 
@@ -104,7 +104,7 @@ define([
             }
 
             var clearFunction = function () {
-                synonymView.clear(0);
+                synonymView.clear();
             }
 
             this.textarea.bind('keydown', 'space',     clearFunction);

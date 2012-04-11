@@ -14,7 +14,7 @@ define([
             this.path = []; // Keeps track of path through active lists
         },
 
-        render: function(x, y, word, level){
+        render: function(word, level, x, y){
             this.word = word;
 
             var data = {
@@ -90,33 +90,26 @@ define([
                 else { view.select($('ul li:first-child', e.target), 1, list); }
             });
 
-            function activateSelected() {
-                // Clear all lists lower than the one containing the selected item
-                view.clear(level + 1);
-
-                // Store the activated word's rank, so it can be returned to later.
-                view.path.push(view.sel.rank);
-
-                var item = view.sel.item,
-                    word = view.editor.getWordObject(item.html().match(/[a-zA-Z]+.+$/)[0]),
-                    nestedList = view.render(x + list.width() + 1,
-                                             y + ((view.sel.rank - 1) * item.height()),
-                                             word, level + 1);
-
-                view.select($('ul li:first-child', nestedList), 1, nestedList);
+            function lookUpSelected() {
+                view.lookUp(view.sel.item, view.sel.rank, {
+                    width: list.width(),
+                    level: level,
+                    x: x, y: y
+                });
 
                 return false; // Prevents bubbling the event up to the document,
                               // which would clear all synonym lists
             }
 
-            $(list).click(activateSelected);
-            $(list).bind('keydown', 'right', activateSelected);
+            $(list).click(lookUpSelected);
+            $(list).bind('keydown', 'right', lookUpSelected);
 
             $(list).bind('keydown', 'left', function () {
                 var previous = view.clear(level),
-                    prevItem = $('ul li:nth-child(' + view.path.pop() + ')', previous);
+                    prevRank = view.path.pop(),
+                    prevItem = $('ul li:nth-child(' + prevRank + ')', previous);
 
-                if (previous) { view.select(prevItem, 1, previous); }
+                if (previous) { view.select(prevItem, prevRank, previous); }
                 else { view.editor.textarea.focus(); }
             });
 
@@ -125,7 +118,7 @@ define([
                 $(list).bind('keydown', i.toString(), function (e) {
                     var numPressed = e.which - 48;
                     if (numPressed === view.sel.rank) {
-                        console.log('Inserting word:' + view.sel.item.html());
+                        this.activate(view.sel.item);
                     } else {
                         var item = $('ul li:nth-child(' + numPressed + ')', e.target);
                         view.select(item, numPressed);
@@ -137,7 +130,7 @@ define([
             $(document).click(function () { view.clear(0); });
         },
 
-        select: function(item, rank, list) {
+        select: function (item, rank, list) {
             if (this.sel.item) { this.sel.item.removeClass('selected'); }
             if (item) { item.addClass('selected'); }
 
@@ -148,8 +141,26 @@ define([
             this.sel.list.focus();
         },
 
+        lookUp: function(item, rank, listData) {
+            this.clear(listData.level + 1); // Clear all lower lists
+            this.path.push(rank); // Store the word's rank, so it can be returned to later.
+
+            var list = this.render(this.editor.getWordObject(this.getWordStr(item)),
+                                   listData.level + 1,
+                                   listData.x + listData.width + 1,
+                                   listData.y + ((rank - 1) * item.height()));
+
+            this.select($('ul li:first-child', list), 1, list);
+        },
+
+        activate: function (item) {
+            this.clear();
+            this.editor.replace(this.getWordStr(item));
+        },
+
         clear: function (level) { // Remove all synonym lists at levels >= 'level'
-            var lastRemaining;    // Returns lowest remaining list
+            var lastRemaining,    // Returns lowest remaining list
+                level = level || 0;
 
             _.each($('.synonyms'), function (list) {
                 var $list = $(list),
@@ -163,6 +174,10 @@ define([
             });
 
             return lastRemaining;
+        },
+
+        getWordStr: function (item) {
+            return item.html().match(/[a-zA-Z]+.+$/)[0];
         }
     });
 
