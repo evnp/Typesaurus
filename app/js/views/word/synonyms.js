@@ -118,7 +118,7 @@ define([
                 $(list).bind('keydown', i.toString(), function (e) {
                     var numPressed = e.which - 48;
                     if (numPressed === view.sel.rank) {
-                        this.activate(view.sel.item);
+                        view.activate(view.sel.item);
                     } else {
                         var item = $('ul li:nth-child(' + numPressed + ')', e.target);
                         view.select(item, numPressed);

@@ -76,6 +76,7 @@ define([
                            y = wordInfo.line * editor.lineHeight;
 
                     editor.synonyms.render(word, 0, x, y);
+                    editor.synonyms.source = wordInfo;
                 }
             });
 
@@ -110,6 +111,17 @@ define([
             this.textarea.bind('keydown', 'space',     clearFunction);
             this.textarea.bind('keydown', 'return',    clearFunction);
             this.textarea.bind('keydown', 'backspace', clearFunction);
+        },
+
+        replace: function (wordStr) {
+            var regex = new RegExp('((?:.*[\n]){' +
+                                    (this.synonyms.source.line - 1).toString() +
+                                   '}.{' + this.synonyms.source.start + '})' +
+                                    this.synonyms.source.word +
+                                   '([\\s\\S]*)'),
+                match = this.textarea.val().match(regex);
+
+            if (match) { this.textarea.val(match[1] + wordStr + match[2]); }
         },
 
         getCurrentWordInfo: function () {
@@ -152,7 +164,7 @@ define([
             return {
                 text:     text.substring(start, end),
                 caretPos: position - start,
-                lineNo:   newlines ? newlines.length + 1 : 1 
+                lineNo:   newlines ? newlines.length + 1 : 1
             };
         },
 
