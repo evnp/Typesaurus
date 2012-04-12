@@ -1,31 +1,40 @@
 /* Color Scheme */
-#header            { color: #2D768E; }
-#text-area         { color: #7CB4C6; }
-#controls          { color: #7CB4C6; }
-input              { color: #7CB4C6; }
-.synonyms          { color: #7CB4C6; }
-#definitions       { color: #E39543; }
-#definitions.text  { color: #61ADC6; }
+/* http://colorschemedesigner.com/#3o31IP.--smIg */
+
+#title             { color: #FF4F00; }
+#header            { color: #0189B0; }
+#text-area         { color: #0189B0; }
+#controls          { color: #0189B0; }
+input              { color: #0189B0; }
+.synonyms          { color: #0189B0; }
+#definitions       { color: #FFA200; }
+#definitions.text  { color: #FF4F00; }
 
 .synonyms .selected {
     color: #ffffff;
-    background-color: #2D768E;
+    background-color: #FF4F00;
 }
 
-::-webkit-input-placeholder { color: #7CB4C6; }
-:-moz-placeholder           { color: #7CB4C6; }
+::-webkit-input-placeholder { color: #0189B0; }
+:-moz-placeholder           { color: #0189B0; }
 
 /* Font */
-#content, input                 { font: 20px Inconsolata; }
-textarea, #text-copy, #synonyms { font: 24px Inconsolata; }
+#title            { font: bold 48px Inconsolata; }
+#content, input        { font: 20px Inconsolata; }
+textarea, #text-copy,
+    #synonyms, #header { font: 24px Inconsolata; }
 
 body {
-    background-color: black;
+    background-color: #f0f7ff;
     height: 100%;
 }
 
 #content {
     margin-top: 200px;
+}
+
+#header {
+    margin-bottom: 20px;
 }
 
 .centered {
@@ -36,24 +45,24 @@ body {
 textarea {
     border: none;
     outline: none;
-    background-color: black;
+    background-color: #f0f7ff;
 }
 
 input {
     margin-top: 20px;
-    background-color: black;
+    background-color: #f0f7ff;
     outline: none;
     border: 1px solid #2D768E;
 }
 
 .synonyms {
-    background-color: black;
+    background-color: #f0f7ff;
     border: 1px solid #2D768E;
     margin-left: -27px;
 
-  -moz-box-shadow:    -1px 1px 20px -7px #fff;
-  -webkit-box-shadow: -1px 1px 20px -7px #fff;
-  box-shadow:         -1px 1px 20px -7px #fff;
+  -moz-box-shadow:    -1px 1px 20px -7px #000;
+  -webkit-box-shadow: -1px 1px 20px -7px #000;
+  box-shadow:         -1px 1px 20px -7px #000;
 }
 
 .synonyms ul {
