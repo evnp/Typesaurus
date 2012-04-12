@@ -10,8 +10,10 @@ define([
     var SynonymView = Backbone.View.extend({
 
         initialize: function () {
-            this.sel  = {}; // Keeps track of selected item
-            this.path = []; // Keeps track of path through active lists
+            this.sel   = {}; // Keeps track of selected item
+            this.path  = []; // Keeps track of path through active lists
+            this.words = []; // Stores word objects for active lists
+            this.pos   = []; // Keeps track of list positions
         },
 
         render: function(word, level, x, y){
@@ -159,12 +161,24 @@ define([
             this.editor.replace(this.getWordStr(item));
         },
 
+        moveDown: function (list, level) {
+            this.pos[level]++;
+            var ul = $('ul', list),
+                next = 
+        },
+
+        moveUp: function (list, level) {
+        },
+
         clearLists: function (level) { // Remove all synonym lists at levels >= 'level'
             var lastRemaining,         // Returns lowest remaining list
                 level = level || 0;
 
             // When clearing all lists, also clear the selection
             if (level === 0) { this.clearSelection(); }
+
+            // Reduce position list down to remaining lists only
+            this.pos = pos.slice(0, level);
 
             _.each($('.synonyms'), function (list) {
                 var $list = $(list),
@@ -183,6 +197,7 @@ define([
         clearSelection: function () {
             this.sel  = {};
             this.path = [];
+            this.pos  = [];
         },
 
         getWordStr: function (item) {
