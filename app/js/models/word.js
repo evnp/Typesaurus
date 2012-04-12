@@ -34,15 +34,20 @@ define([
             this.set({ synonyms: synonyms });
         },
 
-        getSynonyms: function(range) {
+        getSynonym: function(index) {
+            var synonym = this.get('synonyms')[index];
+            if (synonym) { return synonym.is; }
+        },
+
+        // Accepts to/from parameters, just to, or neither.
+        getSynonyms: function(to, from) {
+            from = from || 0;
+            to   = to && to > synonyms.length ? to : synonyms.length;
+
             var synonyms = this.get('synonyms'),
                 list     = [];
 
-            if (!range || range > synonyms.length) {
-                range = synonyms.length;
-            }
-
-            for (var i = 0; i < range; i++) {
+            for (var i = from; i <= to; i++) {
                 list.push(synonyms[i].is);
             }
 
