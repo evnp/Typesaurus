@@ -105,7 +105,7 @@ define([
             $(list).bind('keydown', 'right', lookUpSelected);
 
             $(list).bind('keydown', 'left', function () {
-                var previous = view.clear(level),
+                var previous = view.clearLists(level),
                     prevRank = view.path.pop(),
                     prevItem = $('ul li:nth-child(' + prevRank + ')', previous);
 
@@ -128,7 +128,7 @@ define([
             }
 
             // Clear all lists on any outside-list click
-            $(document).click(function () { view.clear(0); });
+            $(document).click(function () { view.clearLists(); });
         },
 
         select: function (item, rank, list) {
@@ -143,7 +143,7 @@ define([
         },
 
         lookUp: function(item, rank, listData) {
-            this.clear(listData.level + 1); // Clear all lower lists
+            this.clearLists(listData.level + 1); // Clear all lower lists
             this.path.push(rank); // Store the word's rank, so it can be returned to later.
 
             var list = this.render(this.editor.getWordObject(this.getWordStr(item)),
@@ -155,13 +155,16 @@ define([
         },
 
         activate: function (item) {
-            this.clear();
+            this.clearLists();
             this.editor.replace(this.getWordStr(item));
         },
 
-        clear: function (level) { // Remove all synonym lists at levels >= 'level'
-            var lastRemaining,    // Returns lowest remaining list
+        clearLists: function (level) { // Remove all synonym lists at levels >= 'level'
+            var lastRemaining,         // Returns lowest remaining list
                 level = level || 0;
+
+            // When clearing all lists, also clear the selection
+            if (level === 0) { this.clearSelection(); }
 
             _.each($('.synonyms'), function (list) {
                 var $list = $(list),
@@ -175,6 +178,11 @@ define([
             });
 
             return lastRemaining;
+        },
+
+        clearSelection: function () {
+            this.sel  = {};
+            this.path = [];
         },
 
         getWordStr: function (item) {

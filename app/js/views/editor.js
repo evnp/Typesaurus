@@ -67,7 +67,7 @@ define([
             var editor = this;
 
             this.textarea.bind('keydown', 'ctrl+shift+space', function () {
-                editor.synonyms.clear(0);
+                editor.synonyms.clearLists();
 
                 var wordInfo = editor.getCurrentWordInfo();
 
@@ -106,7 +106,7 @@ define([
             }
 
             var clearFunction = function () {
-                synonymView.clear();
+                synonymView.clearLists();
             }
 
             this.textarea.bind('keydown', 'space',     clearFunction);
