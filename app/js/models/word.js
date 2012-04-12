@@ -52,6 +52,15 @@ define([
             }
 
             return list;
+        },
+
+        getAsClass: function() {
+            return this.classFrom(this.get('is'));
+        },
+
+        classFrom: function (wordStr) {
+            console.log(wordStr.replace(/[^a-zA-Z]/g, '-'));
+            return wordStr.replace(/[^a-zA-Z]/g, '-');
         }
     });
 

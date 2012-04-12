@@ -11,22 +11,21 @@ define([
 
         initialize: function () {
             this.sel   = {}; // Keeps track of selected item
-            this.path  = []; // Keeps track of path through active lists
-            this.words = []; // Stores word objects for active lists
-            this.pos   = []; // Keeps track of list positions
+            this.lists = []; // Keeps track of active list information
         },
 
         render: function(word, level, x, y){
-            this.word = word;
+            this.lists.push({ // Store new list information
+                word: word,
+                position: 0
+            });
 
-            var data = {
-                    synonyms: this.word.getSynonyms(5),
-                    _: _
-                },
-                compiledTemplate = _.template(synonymsTemplate,
-                    data).replace('level-number', level);
-
-            this.el.append(compiledTemplate);
+            this.el.append(_.template(synonymsTemplate, {
+                level: level,
+                synonyms: word.getSynonyms(5),
+                classFrom: word.classFrom,
+                _: _
+            }));
 
             var list = this.$('#' + level), // Get the new synonym list element
                 view = this;
@@ -42,14 +41,17 @@ define([
             this.setUpNavigation(list, x, y);
 
             // Set up word synonym update event
-            this.word.bind('change:synonyms', function () {
+            word.bind('change:synonyms', function () {
                 var ul = $('ul', list),
-                     i = 1;
+                    pos = view.lists[level].position;
+                    i = 1;
 
                 ul.empty();
 
-                _.each(view.word.getSynonyms(5), function (synonym) {
-                    ul.append('<li>' + i + ' ' + synonym + '</li>');
+                _.each(word.getSynonyms(pos + 5, pos), function (synonym) {
+                    ul.append('<li class="' + word.classFrom(synonym) + '">' +
+                                  i + ' ' + synonym +
+                              '</li>');
                     i++;
                 });
 
@@ -57,7 +59,7 @@ define([
                 view.setUpHoverSelect(list);
 
                 // Maintain the correct item selection through synonym update
-                if (view.sel.list && view.sel.list.attr('id') === list.attr('id')) {
+                if (view.sel.list && Number(view.sel.list.attr('id')) === level) {
                     view.select($('li:nth-child(' + (view.sel.rank) + ')', ul),
                                 view.sel.rank);
                 }
@@ -107,9 +109,10 @@ define([
             $(list).bind('keydown', 'right', lookUpSelected);
 
             $(list).bind('keydown', 'left', function () {
-                var previous = view.clearLists(level),
-                    prevRank = view.path.pop(),
-                    prevItem = $('ul li:nth-child(' + prevRank + ')', previous);
+                var word = view.lists[level].word,
+                    previous = view.clearLists(level),
+                    prevItem = $('ul li.' + word.getAsClass(), previous),
+                    prevRank = prevItem.index() + 1;
 
                 if (previous) { view.select(prevItem, prevRank, previous); }
                 else { view.editor.textarea.focus(); }
@@ -145,10 +148,11 @@ define([
         },
 
         lookUp: function(item, rank, listData) {
-            this.clearLists(listData.level + 1); // Clear all lower lists
-            this.path.push(rank); // Store the word's rank, so it can be returned to later.
+            var word = this.editor.getWordObject(this.getWordStr(item));
 
-            var list = this.render(this.editor.getWordObject(this.getWordStr(item)),
+            this.clearLists(listData.level + 1); // Clear all lower lists
+
+            var list = this.render(word,
                                    listData.level + 1,
                                    listData.x + listData.width + 1,
                                    listData.y + ((rank - 1) * item.height()));
@@ -162,9 +166,10 @@ define([
         },
 
         moveDown: function (list, level) {
-            this.pos[level]++;
+            this.lists[level].position++;
             var ul = $('ul', list),
-                next = null;
+                next = null; // Should now be able to used cached list info
+                             // to get more synonyms.
         },
 
         moveUp: function (list, level) {
@@ -177,8 +182,8 @@ define([
             // When clearing all lists, also clear the selection
             if (level === 0) { this.clearSelection(); }
 
-            // Reduce position list down to remaining lists only
-            this.pos = this.pos.slice(0, level);
+            // Reduce lists info cache down to remaining lists only
+            this.lists = this.lists.slice(0, level);
 
             _.each($('.synonyms'), function (list) {
                 var $list = $(list),
@@ -195,13 +200,11 @@ define([
         },
 
         clearSelection: function () {
-            this.sel  = {};
-            this.path = [];
-            this.pos  = [];
+            this.sel   = {};
         },
 
         getWordStr: function (item) {
-            return item.html().match(/[a-zA-Z]+.+$/)[0];
+            return item.html().match(/[a-zA-Z]+.+/)[0];
         }
     });
 
