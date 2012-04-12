@@ -95,7 +95,7 @@ define([
                 this.textarea.bind('keydown', i.toString(), function (e) {
                     var list = $('#0', editor.synonyms.el);
 
-                    if (list) {
+                    if (list && list[0]) {
                         var numPressed = e.which - 48,
                             item = $('ul li:nth-child(' + numPressed + ')', list);
 
