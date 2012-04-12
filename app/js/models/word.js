@@ -41,13 +41,13 @@ define([
 
         // Accepts to/from parameters, just to, or neither.
         getSynonyms: function(to, from) {
-            from = from || 0;
-            to   = to && to > synonyms.length ? to : synonyms.length;
-
             var synonyms = this.get('synonyms'),
                 list     = [];
 
-            for (var i = from; i <= to; i++) {
+            from = from || 0;
+            if (!to || to > synonyms.length) { to = synonyms.length; }
+
+            for (var i = from; i < to; i++) {
                 list.push(synonyms[i].is);
             }
 

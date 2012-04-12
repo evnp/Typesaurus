@@ -164,7 +164,7 @@ define([
         moveDown: function (list, level) {
             this.pos[level]++;
             var ul = $('ul', list),
-                next = 
+                next = null;
         },
 
         moveUp: function (list, level) {
@@ -178,7 +178,7 @@ define([
             if (level === 0) { this.clearSelection(); }
 
             // Reduce position list down to remaining lists only
-            this.pos = pos.slice(0, level);
+            this.pos = this.pos.slice(0, level);
 
             _.each($('.synonyms'), function (list) {
                 var $list = $(list),
