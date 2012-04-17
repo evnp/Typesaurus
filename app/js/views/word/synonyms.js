@@ -95,6 +95,8 @@ define([
             // Other Keys
             $(list).bind('keydown', 'space',  lookUpSelected);
             $(list).bind('keydown', 'return', insertSelected);
+            $(list).bind('keydown', 'tab',    lookUpSelected);
+            $(list).bind('keydown', 'shift+tab', closeList);
 
             // Mouse
             $(list).click(lookUpSelected);
@@ -109,12 +111,14 @@ define([
             function selectPrev(e) {
                 var item = view.sel.item.prev();
                 if (item) { view.select(item, item.index() + 1); }
+                return false;
             }
 
             function selectNext(e) {
                 var item = view.sel.item.next();
                 if (item && item[0]) { view.select(item, item.index() + 1); }
                 else { view.select($('ul li:first-child', e.target), 1, list); }
+                return false;
             }
 
             function lookUpSelected() {
@@ -123,8 +127,7 @@ define([
                     level: level,
                     x: x, y: y
                 });
-                              // Prevents bubbling the event up to the document,
-                return false; // which would clear all synonym lists
+                return false;
             }
 
             function insertSelected() {
@@ -140,6 +143,7 @@ define([
 
                 if (previous) { view.select(prevItem, prevRank, previous); }
                 else { view.editor.textarea.focus(); }
+                return false;
             }
 
             function onNumPress(e) {

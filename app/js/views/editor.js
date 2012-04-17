@@ -81,14 +81,18 @@ define([
                 }
             });
 
-            // Transfer control from texarea to synonym list on 'down' arrow
-            this.textarea.bind('keydown', 'down', function () {
+            // Transfer control from texarea to synonym list
+            this.textarea.bind('keydown', 'down', selectFirst);
+            this.textarea.bind('keydown', 'tab',  selectFirst);
+
+            function selectFirst() {
                 var list = $('#0', editor.synonyms.el);
-                if (list) {
+
+                if (list && list[0]) {
                     editor.synonyms.select($('ul li:first-child'), 1, list);
                     return false;
                 } else { return true; }
-            });
+            }
 
             // Transfer control from texarea to synonym list on number key press
             for (var i = 1; i < 6; i++) {
