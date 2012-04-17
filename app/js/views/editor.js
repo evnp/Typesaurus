@@ -114,7 +114,7 @@ define([
             this.textarea.bind('keydown', 'backspace', clearFunction);
         },
 
-        replace: function (wordStr) {
+        insert: function (wordStr) {
             var regex = new RegExp('((?:.*[\n]){' +
                                     (this.synonyms.source.line - 1).toString() +
                                    '}.{' + this.synonyms.source.start + '})' +

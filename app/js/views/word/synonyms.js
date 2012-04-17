@@ -92,6 +92,10 @@ define([
                 $(list).bind('keydown', i.toString(), onNumPress);
             }
 
+            // Other Keys
+            $(list).bind('keydown', 'space',  lookUpSelected);
+            $(list).bind('keydown', 'return', insertSelected);
+
             // Mouse
             $(list).click(lookUpSelected);
 
@@ -123,6 +127,11 @@ define([
                 return false; // which would clear all synonym lists
             }
 
+            function insertSelected() {
+                view.insert(view.sel.item);
+                return false;
+            }
+
             function closeList() {
                 var word = view.lists[level].word,
                     previous = view.clearLists(level),
@@ -136,7 +145,7 @@ define([
             function onNumPress(e) {
                 var numPressed = e.which - 48;
                 if (numPressed === view.sel.rank) {
-                    view.activate(view.sel.item);
+                    insertSelected();
                 } else {
                     var item = $('ul li:nth-child(' + numPressed + ')', e.target);
                     view.select(item, numPressed);
@@ -169,9 +178,9 @@ define([
             this.select($('ul li:first-child', list), 1, list);
         },
 
-        activate: function (item) {
+        insert: function (item) {
             this.clearLists();
-            this.editor.replace(this.getWordStr(item));
+            this.editor.insert(this.getWordStr(item));
         },
 
         moveDown: function (list, level) {
