@@ -80,19 +80,38 @@ define([
         },
 
         setUpNavigation: function (list, x, y) {
+
+            // Arrow Keys
+            $(list).bind('keydown', 'up',    selectPrev);
+            $(list).bind('keydown', 'down',  selectNext);
+            $(list).bind('keydown', 'right', lookUpSelected);
+            $(list).bind('keydown', 'left',  closeList);
+
+            // Number Keys
+            for (var i = 1; i < 6; i++) {
+                $(list).bind('keydown', i.toString(), onNumPress);
+            }
+
+            // Mouse
+            $(list).click(lookUpSelected);
+
+            // Clear all lists on any outside-list click
+            $(document).click(function () { view.clearLists(); });
+
+
             var view = this,
                 level = Number(list.attr('id'));
 
-            $(list).bind('keydown', 'up', function (e) {
+            function selectPrev(e) {
                 var item = view.sel.item.prev();
                 if (item) { view.select(item, item.index() + 1); }
-            });
+            }
 
-            $(list).bind('keydown', 'down', function (e) {
+            function selectNext(e) {
                 var item = view.sel.item.next();
                 if (item && item[0]) { view.select(item, item.index() + 1); }
                 else { view.select($('ul li:first-child', e.target), 1, list); }
-            });
+            }
 
             function lookUpSelected() {
                 view.lookUp(view.sel.item, view.sel.rank, {
@@ -100,15 +119,11 @@ define([
                     level: level,
                     x: x, y: y
                 });
-
-                return false; // Prevents bubbling the event up to the document,
-                              // which would clear all synonym lists
+                              // Prevents bubbling the event up to the document,
+                return false; // which would clear all synonym lists
             }
 
-            $(list).click(lookUpSelected);
-            $(list).bind('keydown', 'right', lookUpSelected);
-
-            $(list).bind('keydown', 'left', function () {
+            function closeList() {
                 var word = view.lists[level].word,
                     previous = view.clearLists(level),
                     prevItem = $('ul li.' + word.getAsClass(), previous),
@@ -116,24 +131,18 @@ define([
 
                 if (previous) { view.select(prevItem, prevRank, previous); }
                 else { view.editor.textarea.focus(); }
-            });
-
-            // Bind number keys
-            for (var i = 1; i < 6; i++) {
-                $(list).bind('keydown', i.toString(), function (e) {
-                    var numPressed = e.which - 48;
-                    if (numPressed === view.sel.rank) {
-                        view.activate(view.sel.item);
-                    } else {
-                        var item = $('ul li:nth-child(' + numPressed + ')', e.target);
-                        view.select(item, numPressed);
-                    }
-                    return false;
-                })
             }
 
-            // Clear all lists on any outside-list click
-            $(document).click(function () { view.clearLists(); });
+            function onNumPress(e) {
+                var numPressed = e.which - 48;
+                if (numPressed === view.sel.rank) {
+                    view.activate(view.sel.item);
+                } else {
+                    var item = $('ul li:nth-child(' + numPressed + ')', e.target);
+                    view.select(item, numPressed);
+                }
+                return false;
+            }
         },
 
         select: function (item, rank, list) {
