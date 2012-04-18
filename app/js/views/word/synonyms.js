@@ -117,7 +117,9 @@ define([
             function selectNext(e) {
                 var item = view.sel.item.next();
                 if (item && item[0]) { view.select(item, item.index() + 1); }
-                else { view.select($('ul li:first-child', e.target), 1, list); }
+                else {
+                    view.moveListDown(list, level);
+                    view.select($('ul li:last-child', list), 1, list); }
                 return false;
             }
 
@@ -187,14 +189,22 @@ define([
             this.editor.insert(this.getWordStr(item));
         },
 
-        moveDown: function (list, level) {
-            this.lists[level].position++;
-            var ul = $('ul', list),
-                next = null; // Should now be able to used cached list info
-                             // to get more synonyms.
+        moveListUp: function (list, level) {
         },
 
-        moveUp: function (list, level) {
+        moveListDown: function (list, level) {
+            this.lists[level].position++;
+            var ul = $('ul', list),
+                listData = this.lists[level],
+                index = listData.position + 5,
+                nextSyn = listData.word.getSynonym(listData.position + 5);
+
+            console.log(listData.word.get('synonyms'));
+
+            if (next) {
+                ul.append('<li class="' + nextSyn + '">' +
+                           '5 ' + nextSyn + '</li>');
+            }
         },
 
         clearLists: function (level) { // Remove all synonym lists at levels >= 'level'

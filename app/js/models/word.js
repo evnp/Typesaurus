@@ -59,7 +59,6 @@ define([
         },
 
         classFrom: function (wordStr) {
-            console.log(wordStr.replace(/[^a-zA-Z]/g, '-'));
             return wordStr.replace(/[^a-zA-Z]/g, '-');
         }
     });
