@@ -89,7 +89,7 @@ define([
                 var list = $('#0', editor.synonyms.el);
 
                 if (list && list[0]) {
-                    editor.synonyms.select($('ul li:first-child'), 1, list);
+                    editor.synonyms.select($('ol li:first-child'), 1, list);
                     return false;
                 } else { return true; }
             }
@@ -101,7 +101,7 @@ define([
 
                     if (list && list[0]) {
                         var numPressed = e.which - 48,
-                            item = $('ul li:nth-child(' + numPressed + ')', list);
+                            item = $('ol li:nth-child(' + numPressed + ')', list);
 
                         editor.synonyms.select(item, numPressed, list);
                         return false;

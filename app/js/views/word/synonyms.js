@@ -37,22 +37,18 @@ define([
             });
 
             // Set up navigation on the list
-            $('li', list).hover(this.onMouseHover);
+            $('li', list).hover(function (e) { view.onMouseHover(e, list); });
             this.setUpNavigation(list, x, y);
 
             // Set up word synonym update event
             word.bind('change:synonyms', function () {
-                var ul = $('ul', list),
+                var ol = $('ol', list),
                     pos = view.lists[level].position;
-                    i = 1;
 
-                ul.empty();
+                ol.empty();
 
                 _.each(word.getSynonyms(pos + 5, pos), function (synonym) {
-                    ul.append('<li class="' + word.classFrom(synonym) + '">' +
-                                  i + ' ' + synonym +
-                              '</li>');
-                    i++;
+                    ol.append('<li class="' + word.classFrom(synonym) + '">' + synonym + '</li>');
                 });
 
                 // New li's were created; reconfigure li events
@@ -60,7 +56,7 @@ define([
 
                 // Maintain the correct item selection through synonym update
                 if (view.sel.list && Number(view.sel.list.attr('id')) === level) {
-                    view.select($('li:nth-child(' + (view.sel.rank) + ')', ul),
+                    view.select($('li:nth-child(' + (view.sel.rank) + ')', ol),
                                 view.sel.rank);
                 }
             });
@@ -111,7 +107,7 @@ define([
                     view.select(item, item.index() + 1);
                 } else if (view.lists[level].position) {
                     view.moveList('up', list, level);
-                    view.select($('ul li:first-child', list), 1, list);
+                    view.select($('ol li:first-child', list), 1, list);
                 }
                 return false;
             }
@@ -124,7 +120,7 @@ define([
                     view.select(item, item.index() + 1);
                 } else if (listData.position + 5 < listData.word.get('synonyms').length) {
                     view.moveList('down', list, level);
-                    var newItem = $('ul li:last-child', list);
+                    var newItem = $('ol li:last-child', list);
                     view.select(newItem, newItem.index() + 1);
                 }
                 return false;
@@ -147,7 +143,7 @@ define([
             function closeList() {
                 var word = view.lists[level].word,
                     previous = view.clearLists(level),
-                    prevItem = $('ul li.' + word.getAsClass(), previous),
+                    prevItem = $('ol li.' + word.getAsClass(), previous),
                     prevRank = prevItem.index() + 1;
 
                 if (previous) { view.select(prevItem, prevRank, previous); }
@@ -160,7 +156,7 @@ define([
                 if (numPressed === view.sel.rank) {
                     insertSelected();
                 } else {
-                    var item = $('ul li:nth-child(' + numPressed + ')', e.target);
+                    var item = $('ol li:nth-child(' + numPressed + ')', e.target);
                     view.select(item, numPressed);
                 }
                 return false;
@@ -188,7 +184,7 @@ define([
                                    listData.x + listData.width + 1,
                                    listData.y + ((rank - 1) * item.height()));
 
-            this.select($('ul li:first-child', list), 1, list);
+            this.select($('ol li:first-child', list), 1, list);
         },
 
         insert: function (item) {
@@ -201,20 +197,20 @@ define([
 
             this.lists[level].position += movingDown ? 1 : -1;
 
-            var ul = $('ul', list),
+            var ol = $('ol', list),
                 listData = this.lists[level];
                 newSyn = listData.word.getSynonym((movingDown ? 5 : 1) + listData.position - 1),
-                li = '<li class="' + newSyn + '">0 ' + newSyn + '</li>';
+                li = '<li class="' + newSyn + '">' + newSyn + '</li>';
 
             // Add the item that's shown by the move
-            ul[ movingDown ? 'append' : 'prepend' ](li);
+            ol[ movingDown ? 'append' : 'prepend' ](li);
 
             // Remove the item that's hidden by the move
-            $('li:nth-child(' + (movingDown ? 1 : 5) + ')', ul).remove();
+            $('li:nth-child(' + (movingDown ? 1 : 6) + ')', ol).remove();
 
-            // Configure mouse hover on the new item 
+            // Configure mouse hover on the new item
             var view = this;
-            $('li:' + (movingDown ? 'last' : 'first') + '-child', ul).hover(function (e) {
+            $('li:' + (movingDown ? 'last' : 'first') + '-child', ol).hover(function (e) {
                 view.onMouseHover(e, list);
             });
         },
@@ -248,7 +244,7 @@ define([
         },
 
         getWordStr: function (item) {
-            return item.html().match(/[a-zA-Z]+.+/)[0];
+            return item.html();
         }
     });
 

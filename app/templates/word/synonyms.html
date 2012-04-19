@@ -1,13 +1,13 @@
 <%= '<div id="' + level + '" class="synonyms" tabindex="0" style="position: absolute; top: 0; left: 0;">' %>
-<ul>
+<ol>
   <% if (synonyms && synonyms.length) { %>
-    <% var i = 1; _.each(synonyms, function (synonym) { %>
+    <% _.each(synonyms, function (synonym) { %>
       <%= '<li class="' + classFrom(synonym) + '">'%>
-        <%= i++ + ' ' + synonym %>
+        <%= synonym %>
       <%= '</li>' %>
     <% }); %>
   <% } else { %>
-    <li>loading...</li>
+    <li class='loading'>loading...</li>
   <% } %>
-</ul>
+</ol>
 <%= '</div>' %>

@@ -65,10 +65,24 @@ input {
   box-shadow:         -1px 1px 20px -7px #000;
 }
 
-.synonyms ul {
-    list-style-type: none;
+.synonyms ol {
     margin: 4px;
     padding: 0px;
+
+    /* Remove decimal after ol numbering */
+    counter-reset: item;
+    list-style-type: none;
+}
+
+/* Remove decimal after ol numbering */
+.synonyms li { display: block; }
+.synonyms li:before {
+    content: counter(item) "  ";
+    counter-increment: item
+}
+
+.synonyms li.loading:before {
+    content: none;
 }
 
 /* Code to allow auto-resizing of editor */
