@@ -37,7 +37,7 @@ define([
             });
 
             // Set up navigation on the list
-            this.setUpHoverSelect(list);
+            $('li', list).hover(this.onMouseHover);
             this.setUpNavigation(list, x, y);
 
             // Set up word synonym update event
@@ -55,8 +55,8 @@ define([
                     i++;
                 });
 
-                // New li's were created; reconfigure events
-                view.setUpHoverSelect(list);
+                // New li's were created; reconfigure li events
+                $('li', list).hover(function (e) { view.onMouseHover(e, list); });
 
                 // Maintain the correct item selection through synonym update
                 if (view.sel.list && Number(view.sel.list.attr('id')) === level) {
@@ -68,15 +68,11 @@ define([
             return list;
         },
 
-        setUpHoverSelect: function (list) {
-            var view = this;
-
-            $('li', list).hover(function (e) {
-                var item = $(e.target);
-                if (e.type === 'mouseenter') {
-                    view.select(item, item.index() + 1, list);
-                }
-            });
+        onMouseHover: function (e, list) {
+            var item = $(e.target);
+            if (e.type === 'mouseenter') {
+                this.select(item, item.index() + 1, list);
+            }
         },
 
         setUpNavigation: function (list, x, y) {
@@ -110,16 +106,27 @@ define([
 
             function selectPrev(e) {
                 var item = view.sel.item.prev();
-                if (item) { view.select(item, item.index() + 1); }
+
+                if (item && item[0]) {
+                    view.select(item, item.index() + 1);
+                } else if (view.lists[level].position) {
+                    view.moveList('up', list, level);
+                    view.select($('ul li:first-child', list), 1, list);
+                }
                 return false;
             }
 
             function selectNext(e) {
-                var item = view.sel.item.next();
-                if (item && item[0]) { view.select(item, item.index() + 1); }
-                else {
-                    view.moveListDown(list, level);
-                    view.select($('ul li:last-child', list), 1, list); }
+                var item = view.sel.item.next(),
+                    listData = view.lists[level];
+
+                if (item && item[0]) {
+                    view.select(item, item.index() + 1);
+                } else if (listData.position + 5 < listData.word.get('synonyms').length) {
+                    view.moveList('down', list, level);
+                    var newItem = $('ul li:last-child', list);
+                    view.select(newItem, newItem.index() + 1);
+                }
                 return false;
             }
 
@@ -189,22 +196,27 @@ define([
             this.editor.insert(this.getWordStr(item));
         },
 
-        moveListUp: function (list, level) {
-        },
+        moveList: function (direction, list, level) {
+            var movingDown = direction === 'down';
 
-        moveListDown: function (list, level) {
-            this.lists[level].position++;
+            this.lists[level].position += movingDown ? 1 : -1;
+
             var ul = $('ul', list),
-                listData = this.lists[level],
-                index = listData.position + 5,
-                nextSyn = listData.word.getSynonym(listData.position + 5);
+                listData = this.lists[level];
+                newSyn = listData.word.getSynonym((movingDown ? 5 : 1) + listData.position - 1),
+                li = '<li class="' + newSyn + '">0 ' + newSyn + '</li>';
 
-            console.log(listData.word.get('synonyms'));
+            // Add the item that's shown by the move
+            ul[ movingDown ? 'append' : 'prepend' ](li);
 
-            if (next) {
-                ul.append('<li class="' + nextSyn + '">' +
-                           '5 ' + nextSyn + '</li>');
-            }
+            // Remove the item that's hidden by the move
+            $('li:nth-child(' + (movingDown ? 1 : 5) + ')', ul).remove();
+
+            // Configure mouse hover on the new item 
+            var view = this;
+            $('li:' + (movingDown ? 'last' : 'first') + '-child', ul).hover(function (e) {
+                view.onMouseHover(e, list);
+            });
         },
 
         clearLists: function (level) { // Remove all synonym lists at levels >= 'level'
