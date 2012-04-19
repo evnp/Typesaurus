@@ -127,11 +127,15 @@ define([
             }
 
             function lookUpSelected() {
-                view.lookUp(view.sel.item, view.sel.rank, {
-                    width: list.width(),
-                    level: level,
-                    x: x, y: y
-                });
+                var item = view.sel.item;
+
+                if (!item.hasClass('loading')) {
+                    view.lookUp(item, view.sel.rank, {
+                        width: list.width(),
+                        level: level,
+                        x: x, y: y
+                    });
+                }
                 return false;
             }
 
@@ -143,11 +147,17 @@ define([
             function closeList() {
                 var word = view.lists[level].word,
                     previous = view.clearLists(level),
-                    prevItem = $('ol li.' + word.getAsClass(), previous),
-                    prevRank = prevItem.index() + 1;
+                    prevItem = $('ol li.' + word.getAsClass(), previous);
 
-                if (previous) { view.select(prevItem, prevRank, previous); }
-                else { view.editor.textarea.focus(); }
+                if (previous) {
+                    if (prevItem && prevItem[0]) {
+                        view.select(prevItem, prevItem.index() + 1, previous);
+                    } else {
+                        view.select($('ol li:first-child', previous), 1, previous);
+                    }
+                } else {
+                    view.editor.textarea.focus();
+                }
                 return false;
             }
 
