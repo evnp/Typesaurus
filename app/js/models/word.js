@@ -59,7 +59,14 @@ define([
         },
 
         classFrom: function (wordStr) {
-            return wordStr.replace(/[^a-zA-Z]/g, '-');
+            var split = wordStr.split(/\W+/g);
+
+            if (split[0] === '') { split = split.splice(1); }
+            if (split[split.length - 1] === '') {
+                split = split.splice(0, split.length - 1);
+            }
+
+            return split.join('-');
         }
     });
 
