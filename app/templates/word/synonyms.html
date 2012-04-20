@@ -2,9 +2,7 @@
 <ol>
   <% if (synonyms && synonyms.length) { %>
     <% _.each(synonyms, function (synonym) { %>
-      <%= '<li class="' + classFrom(synonym) + '">'%>
-        <%= synonym %>
-      <%= '</li>' %>
+      <%= '<li class="' + classFrom(synonym) + '">' + synonym + '</li>' %>
     <% }); %>
   <% } else { %>
     <li class='loading'>loading...</li>
