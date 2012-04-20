@@ -1,3 +1,20 @@
-<span>Press</span>
-<input type="text" name="hotkey" value="ctrl+shift+space"/>
-<span>to see synonyms for the word under the cursor.</span>
+<div id="hotkey-controls">
+    <span>Press</span>
+    <input type="text" name="hotkey" value="ctrl+shift+space"/>
+    <span>to see synonyms for the word under the cursor.</span>
+</div>
+<div id="auto-controls" style="display: none">
+    <span>Press space after a word and its synonyms will appear.</span>
+</div>
+<fieldset id="hotkey-auto-switch" class="switch blue">
+    <legend>Summon synonyms with</legend>
+
+    <input id="hotkey" name="view" type="radio" checked>
+    <label for="hotkey">HOTKEY</label>
+
+    <input id="auto" name="view" type="radio">
+    <label for="auto">TYPING</label>
+
+    <span class="switch-button"></span>
+</fieldset>
+
