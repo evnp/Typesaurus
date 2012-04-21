@@ -74,21 +74,21 @@ define([
         setUpNavigation: function (list, x, y) {
 
             // Arrow Keys
-            $(list).bind('keydown', 'up',    selectPrev);
-            $(list).bind('keydown', 'down',  selectNext);
-            $(list).bind('keydown', 'right', lookUpSelected);
-            $(list).bind('keydown', 'left',  closeList);
+            $(list).keydown('up',    selectPrev);
+            $(list).keydown('down',  selectNext);
+            $(list).keydown('right', lookUpSelected);
+            $(list).keydown('left',  closeList);
 
             // Number Keys
             for (var i = 1; i < 6; i++) {
-                $(list).bind('keydown', i.toString(), onNumPress);
+                $(list).keydown(i.toString(), onNumPress);
             }
 
             // Other Keys
-            $(list).bind('keydown', 'space',  lookUpSelected);
-            $(list).bind('keydown', 'return', insertSelected);
-            $(list).bind('keydown', 'tab',    lookUpSelected);
-            $(list).bind('keydown', 'shift+tab', closeList);
+            $(list).keydown('space',  lookUpSelected);
+            $(list).keydown('return', insertSelected);
+            $(list).keydown('tab',    lookUpSelected);
+            $(list).keydown('shift+tab', closeList);
 
             // Mouse
             $(list).click(lookUpSelected);

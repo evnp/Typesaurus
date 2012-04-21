@@ -66,24 +66,11 @@ define([
         bindHotkeys: function () {
             var editor = this;
 
-            this.textarea.bind('keydown', 'ctrl+shift+space', function () {
-                editor.synonyms.clearLists();
-
-                var wordInfo = editor.getCurrentWordInfo();
-
-                if (wordInfo) {
-                    var word = editor.getWordObject(wordInfo.word),
-                           x = wordInfo.start * editor.charWidth,
-                           y = wordInfo.line * editor.lineHeight;
-
-                    editor.synonyms.render(word, 0, x, y);
-                    editor.synonyms.source = wordInfo;
-                }
-            });
+            this.switchMode(); // Initially defaults to hotkey mode
 
             // Transfer control from texarea to synonym list
-            this.textarea.bind('keydown', 'down', selectFirst);
-            this.textarea.bind('keydown', 'tab',  selectFirst);
+            this.textarea.keydown('down', selectFirst);
+            this.textarea.keydown('tab',  selectFirst);
 
             function selectFirst() {
                 var list = $('#0', editor.synonyms.el);
@@ -96,7 +83,7 @@ define([
 
             // Transfer control from texarea to synonym list on number key press
             for (var i = 1; i < 6; i++) {
-                this.textarea.bind('keydown', i.toString(), function (e) {
+                this.textarea.keydown(i.toString(), function (e) {
                     var list = $('#0', editor.synonyms.el);
 
                     if (list && list[0]) {
@@ -113,9 +100,62 @@ define([
                 synonymView.clearLists();
             }
 
-            this.textarea.bind('keydown', 'space',     clearFunction);
-            this.textarea.bind('keydown', 'return',    clearFunction);
-            this.textarea.bind('keydown', 'backspace', clearFunction);
+            this.textarea.keydown('space',     clearFunction);
+            this.textarea.keydown('return',    clearFunction);
+            this.textarea.keydown('backspace', clearFunction);
+
+            this.textarea.keydown(function (e) {
+                // Covers all character keys
+                if (e.which >= 44 && e.which <= 222) { clearFunction(); }
+            });
+        },
+
+        switchMode: function () {
+            var editor = this;
+
+            this.mode = this.mode === 'hotkey' ? 'auto' : 'hotkey';
+            this.hotkey = this.hotkey || 'ctrl+shift+space';
+
+            if (this.mode === 'hotkey') {
+                this.textarea.keydown('space', function () { synonymView.clearLists(); });
+                this.textarea.keydown(this.hotkey, function () {
+                    summonList(editor.getWordInfo());
+                });
+            } else if (this.mode === 'auto') {
+                this.textarea.keydown(this.hotkey, function () { return true; });
+                this.textarea.keydown('space', function () {
+                    summonList(editor.getWordInfo(-1));
+                });
+            }
+
+            function summonList(wordInfo) {
+                if (wordInfo) {
+                    var word = editor.getWordObject(wordInfo.word),
+                           x = wordInfo.start * editor.charWidth,
+                           y = wordInfo.line * editor.lineHeight;
+
+                    editor.synonyms.clearLists();
+                    editor.synonyms.render(word, 0, x, y);
+                    editor.synonyms.source = wordInfo;
+                }
+            }
+        },
+
+        setHotkeyMode: function () {
+            this.textarea.keydown('ctrl+shift+space', function () {
+                editor.synonyms.clearLists();
+
+                var wordInfo = editor.getWordInfo();
+
+                if (wordInfo) {
+                    var word = editor.getWordObject(wordInfo.word),
+                           x = wordInfo.start * editor.charWidth,
+                           y = wordInfo.line * editor.lineHeight;
+
+                    editor.synonyms.render(word, 0, x, y);
+                    editor.synonyms.source = wordInfo;
+                }
+            });
         },
 
         insert: function (wordStr) {
@@ -133,10 +173,12 @@ define([
             } else { this.textarea.focus(); }
         },
 
-        getCurrentWordInfo: function () {
-            var lineInfo = this.getCurrentLineInfo(),
+        getWordInfo: function (caretOffset) {
+            caretOffset = caretOffset || 0;
+
+            var lineInfo = this.getLineInfo(),
                 text = lineInfo.text,
-                start = end = lineInfo.caretPos,
+                start = end = lineInfo.caretPos + caretOffset,
                 wordChars  = /[a-zA-Z'-]/;
 
             // Get the start and end boundries of the word
@@ -153,7 +195,7 @@ define([
             };
         },
 
-        getCurrentLineInfo: function () {
+        getLineInfo: function () {
             var text     = this.textarea.val(),
                 position = this.getCaretPosition(),
                 before   = text.substring(0, position),

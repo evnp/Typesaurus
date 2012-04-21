@@ -17,7 +17,7 @@ define([
         render: function(){
             this.el.html(mainTemplate);
             editorView.render();
-            controlsView.render();
+            controlsView.render(editorView);
             defView.render();
         }
     });

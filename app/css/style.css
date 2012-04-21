@@ -42,6 +42,9 @@ body {
     margin: 0 auto;
 }
 
+#editor { z-index: 1; }
+#controls { z-index: 0; }
+
 textarea {
     border: none;
     outline: none;
@@ -192,13 +195,11 @@ input {
 	text-align: center;
 
 	color: #64676b;
-	text-shadow: 0 1px 0 #000;
 }
 
 
 .switch input:checked + label {
 	color: #2d592a;
-	text-shadow: 0 1px 0 rgba(255,255,255,0.5);
 }
 
 .switch input:focus + label {

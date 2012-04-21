@@ -14,7 +14,7 @@ define([
         initialize: function(){
         },
 
-        render: function(){
+        render: function(editor){
             var data = {
                 _: _
             };
@@ -36,6 +36,8 @@ define([
                     auto.fadeOut();
                     hotkey.fadeIn();
                 }
+
+                editor.switchMode();
             });
         }
     });
