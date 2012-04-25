@@ -6,7 +6,7 @@ define([
     'views/main',
     'views/word/list',
     'views/user/list'
-], function($, _, Backbone, mainView, wordListView, userListView){
+], function($, _, Backbone, MainView, wordListView, userListView){
 
     var AppRouter = Backbone.Router.extend({
 
@@ -29,12 +29,13 @@ define([
         },
 
         showMain: function(actions){
-            mainView.render();
+            this.mainView.render();
         }
     });
 
     var initialize = function(){
         var app_router = new AppRouter;
+        app_router.mainView = new MainView;
         Backbone.history.start();
     };
 

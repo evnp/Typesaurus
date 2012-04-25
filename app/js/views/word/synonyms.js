@@ -9,6 +9,8 @@ define([
 
     var SynonymView = Backbone.View.extend({
 
+        el: '#synonyms-container',
+
         initialize: function () {
             this.sel   = {}; // Keeps track of selected item
             this.lists = []; // Keeps track of active list information
@@ -20,7 +22,7 @@ define([
                 position: 0
             });
 
-            this.el.append(_.template(synonymsTemplate, {
+            this.$el.append(_.template(synonymsTemplate, {
                 level: level,
                 synonyms: word.getSynonyms(5),
                 classFrom: word.classFrom,
@@ -258,5 +260,5 @@ define([
         }
     });
 
-    return new SynonymView;
+    return SynonymView;
 });

@@ -9,18 +9,20 @@ define([
     'views/word/definitions'
 
 ], function($, _, Backbone, mainTemplate,
-            editorView, controlsView, defView){
+            EditorView, ControlsView, DefinitionView){
 
-    var mainView = Backbone.View.extend({
-        el: $("#content"),
+    var MainView = Backbone.View.extend({
+
+        el: '#content',
 
         render: function(){
-            this.el.html(mainTemplate);
-            editorView.render();
-            controlsView.render(editorView);
-            defView.render();
+            this.$el.html(mainTemplate);
+
+            var editor = (new EditorView).render();
+            (new ControlsView).render(editor);
+            (new DefinitionView).render();
         }
     });
 
-    return new mainView;
+    return MainView;
 });

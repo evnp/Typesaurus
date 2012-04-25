@@ -8,9 +8,9 @@ define([
 
 ], function($, _, Backbone, wordCollection, defTemplate) {
 
-    var defView = Backbone.View.extend({
+    var DefinitionView = Backbone.View.extend({
 
-        el: $('#definitions'),
+        el: '#definitions',
 
         initialize: function(){
             this.words = wordCollection;
@@ -28,9 +28,9 @@ define([
             };       // its functions are accessible on the template
 
             var compiledTemplate = _.template( defTemplate, data );
-            $('#definitions').html( compiledTemplate ); 
+            this.$el.html( compiledTemplate ); 
         }
     });
 
-    return new defView;
+    return DefinitionView;
 });

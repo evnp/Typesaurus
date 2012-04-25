@@ -7,12 +7,9 @@ define([
 
 ], function($, _, Backbone, controlsTemplate) {
 
-    var controlsView = Backbone.View.extend({
+    var ControlsView = Backbone.View.extend({
 
         el: $('#controls'),
-
-        initialize: function(){
-        },
 
         render: function(editor){
             var data = {
@@ -42,6 +39,6 @@ define([
         }
     });
 
-    return new controlsView;
+    return ControlsView;
 });
 

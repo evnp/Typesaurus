@@ -9,42 +9,48 @@ define([
     'text!templates/editor.html'
 
 ], function ($, _, Backbone, jQueryHotkeys,
-  WordCollection, synonymView, editorTemplate) {
+  WordCollection, SynonymView, editorTemplate) {
 
-    var editorView = Backbone.View.extend({
+    var EditorView = Backbone.View.extend({
 
-        el: $('#editor'),
+        el: '#editor',
 
         initialize: function () {
             this.words = WordCollection;
-            this.synonyms = synonymView;
 
             this.charWidth  = 12;
             this.lineHeight = 24;
         },
 
         render: function () {
+
             var data = {
                 _: _
             };
 
             var compiledTemplate = _.template( editorTemplate, data );
-            $('#editor').html( compiledTemplate );
-            this.textarea = $('#text-area');
+            this.$el.html( compiledTemplate );
+            this.textarea = this.$('#text-area');
             this.textarea.focus();
 
             // Get the actual HTMLElement out of the jQuery object
             this.textarea.el = this.textarea.get(0);
 
+            // Set up synonym view
+            this.createSynonymView();
+
             // Set up editor auto-resize
             this.bindAutoResize();
 
-            // Set up synonymView references
-            this.synonyms.editor = this;
-            this.synonyms.el = $($('#synonyms-container')[0]);
-
             // Bind synonym-menu hotkey and other events
             this.bindHotkeys();
+
+            return this;
+        },
+
+        createSynonymView: function () {
+            this.synonyms = new SynonymView;
+            this.synonyms.editor = this;
         },
 
         bindAutoResize: function () {
@@ -97,7 +103,7 @@ define([
             }
 
             var clearFunction = function () {
-                synonymView.clearLists();
+                editor.synonyms.clearLists();
             }
 
             this.textarea.keydown('space',     clearFunction);
@@ -117,7 +123,7 @@ define([
             this.hotkey = this.hotkey || 'ctrl+shift+space';
 
             if (this.mode === 'hotkey') {
-                this.textarea.keydown('space', function () { synonymView.clearLists(); });
+                this.textarea.keydown('space', function () { this.synonyms.clearLists(); });
                 this.textarea.keydown(this.hotkey, function () {
                     summonList(editor.getWordInfo());
                 });
@@ -283,5 +289,5 @@ define([
         }
     });
 
-    return new editorView;
+    return EditorView;
 });
