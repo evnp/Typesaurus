@@ -9,19 +9,13 @@ define([
 
     var ControlsView = Backbone.View.extend({
 
-        el: $('#controls'),
+        el: '#controls',
 
         render: function(editor){
-            var data = {
-                _: _
-            };
 
-            var compiledTemplate = _.template( controlsTemplate, data ),
-                el = $('#controls');
+            this.$el.html(_.template( controlsTemplate, {} ));
 
-            el.html( compiledTemplate );
-
-            $('#hotkey-auto-switch input', el).change(function (e) {
+            this.$('#hotkey-auto-switch input').change(function (e) {
                 var id = e.target.id,
                     hotkey = $('#hotkey-controls', el),
                     auto = $('#auto-controls', el);
