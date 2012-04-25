@@ -1,50 +1,46 @@
 var url       = require('url'),
-    thesaurus = require('mongojs').connect('thesaurus', ['words']);
+    request   = require('request'),
+    thesaurus = require('mongojs').connect('thesaurus', ['words']),
+    apiKey    = getApiKey(require('fs'), 'api/thesaurus_api_key.txt');
+
+function getApiKey(fs, path) {
+    try {
+        return fs.readFileSync(path).toString().replace(/\s+/g, '');
+    } catch (e) {
+        console.error('There was an error opening the api key:');
+        console.log(e);
+        process.exit(1);
+    }
+}
 
 function handleWordQuery(request, response) {
+    var word = processRequest(request);
 
-    function prettify(obj) {
-        var output = '';
-        for (property in obj) { output += property + ': ' + obj[property]+'\n'; }
-        return output
-    }
+    if (word) { // Only respond to a correctly formed query string
 
-    var words = processRequest(request);
+        // Try to find the word's entry in the database
+        thesaurus.words.find({ is: word }, function(error, result) {
 
-    if (words) { // Only respond to a correctly formed query string
-        var body = {},
-            searchCount = 0;
+            if (error) {
+                console.error('There was an query error:');
+                console.log(error);
 
-        // Iterate over the words provided in the query string
-        // (will usually be just one)
-        for (i = 0; i < words.length; i++) {
+            } else if (result && result[0] && result[0].is === word) {
 
-            // For each word, find its entry in the database
-            thesaurus.words.find({ is: words[i] }, function(error, result) {
-                if (error) {
-                    console.log('There was an query error: ' + prettify(error));
-                } else if (!result || !result[0] || !result[0].is) {
-                    console.log('Word not found in thesaurus.');
-                } else {
-                    var word = result[0].is;
-
-                    body[word] = processSearchResult(word, result);
-
-                    // Increment the number of words that have been searched for
-                    // Once this matches the total number words given in the
-                    // query string, send the response.
-                    searchCount++;
-                    if (searchCount === words.length) {
-                        response.writeHead(200, {'Content-type': 'text/json'});
-
-                        try { response.end(JSON.stringify(body)); }
-                        catch (e) {
-                            console.log('There was a parse error: ' + prettify(e));
-                        }
-                    }
+                // If the word was found, send it as JSON
+                try {
+                    response.writeHead(200, {'Content-type': 'text/json'});
+                    response.end(JSON.stringify(result[0]));
+                } catch (e) {
+                    console.error('There was a parse error:');
+                    console.log(e);
                 }
-            });
-        }
+
+            } else { // If the word wasn't found, get it from the API:
+                accessApi(word, response);
+            }
+        });
+
     } else {
         response.writeHead(400);
         response.end();
@@ -82,39 +78,59 @@ function handleWordUpdate(request, response) {
     }
 }
 
-function processGet(data) {
-    return ('word' in data.query) ? data.query.word : null;
-}
-
-function processPost(data) {
-    return ('original' in data.query && 'replacement' in data.query) ?
-        data.query : null;
-}
-
 function processRequest(request) {
     var data = url.parse(request.url, true),
-        type = request.method,
-        words;
+        type = request.method;
 
     if ('query' in data && data.query && (type === 'GET' || type === 'POST')) {
-        words = type === 'GET' ? processGet(data) : processPost(data);
+        return type === 'GET' ? processGet(data) : processPost(data);
     }
 
-    return (typeof words === 'string') ? [words] : words;
+    function processGet(data) {
+        return ('word' in data.query) ? data.query.word : null;
+    }
+
+    function processPost(data) {
+        return ('original' in data.query && 'replacement' in data.query) ?
+            data.query : null;
+    }
 }
 
-function processSearchResult(word, entries) {
-    var synonyms = [];
+function accessApi(word, response) {
 
-    if (entries instanceof Array) {
-        for (var i = 0; i < entries.length; i++) {
-            if (entries[i].is === word) {
-                synonyms = synonyms.concat(entries[i].synonyms || []);
+    if (apiKey) {
+        var url = 'http://words.bighugelabs.com/api/2/' + apiKey + '/' + word + '/json';
+
+        request(url, function (error, headers, body) {
+            if (!error && headers.statusCode == 200) {
+                try {
+                    // Create a new word object
+                    var wordObject = JSON.parse(body);
+                    wordObject.is  = word;
+
+                    // Send the word to the application
+                    response.writeHead(200, {'Content-type': 'text/json'});
+                    response.end(JSON.stringify(wordObject));
+
+                    // Save the word in the database
+                    thesaurus.words.save(wordObject, function (error, saved) {
+                        if (error || !saved) {
+                            console.error('There was a problem saving a word:');
+                            console.log(error);
+                            console.log(wordObject);
+                        }
+                    });
+                } catch (e) {
+                    console.error('There was a parse error:');
+                    console.log(e);
+                }
+            } else {
+                console.error('API access error:');
+                console.log(error);
+                console.log(headers);
             }
-        }
+        });
     }
-
-    return synonyms;
 }
 
 module.exports.handleWordQuery  = handleWordQuery;

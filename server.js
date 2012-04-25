@@ -10,12 +10,11 @@ http.createServer(function (request, response) {
 
         // If request is to the api, at subdomain '/thesaurus'...
         if (request.url.indexOf('/thesaurus') !== -1) {
-            console.log('getting synonyms');
             if (request.method === 'GET') {
 
                 // GET
-                // Url form accepted: /thesaurus?word=abc&word=def&word=ghi&etc.
-                // Sends a JSON response containing the words and their synonyms.
+                // Url form accepted: /thesaurus?word=abc
+                // Sends a JSON response containing the word and their synonyms.
                 api.handleWordQuery(request, response);
 
             } else if (request.method === 'POST') {
