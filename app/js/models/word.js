@@ -1,21 +1,30 @@
 define([
+    'jquery',
     'underscore',
     'backbone'
 
-], function(_, Backbone) {
+], function($, _, Backbone) {
 
     var Word = Backbone.Model.extend({
 
-        defaults: {
-            is:       '',
-            type:     'unknown',
-            def:      '',
-            synonyms: [] // [{ is: 'wordA', rating: 3 },
-                         //  { is: 'wordB', rating: 2 },
-                         //  { is: 'wordC', rating: 1 }]
-        },
+        thesaurus_url: 'http://localhost:8080/thesaurus',
 
-        initialize: function(){
+        initialize: function(attributes){
+            var word = this
+                wordIs = this.get('is'),
+                url = this.thesaurus_url;
+
+            $.ajax(url + '?word=' + wordIs, {
+                success: function (response) {
+                    if (response && response.is === wordIs) {
+                        word.set(response);
+                        console.log(word);
+                    } else {
+                        word.addToThesaurus();
+                    }
+                },
+                error: function (request, stat, err) { console.log(err); },
+            });
         },
 
         addSynonym: function(newSyn) {
@@ -35,23 +44,17 @@ define([
         },
 
         getSynonym: function(index) {
-            var synonym = this.get('synonyms')[index];
-            if (synonym) { return synonym.is; }
+            return this.get('synonyms')[index];
         },
 
         // Accepts to/from parameters, just to, or neither.
         getSynonyms: function(to, from) {
-            var synonyms = this.get('synonyms'),
-                list     = [];
+            var synonyms = this.get('synonyms');
+            return synonyms.splice(from || 0, to || synonyms.length);
+        },
 
-            from = from || 0;
-            if (!to || to > synonyms.length) { to = synonyms.length; }
-
-            for (var i = from; i < to; i++) {
-                list.push(synonyms[i].is);
-            }
-
-            return list;
+        addToThesaurus: function() {
+            console.log('Adding ' + this.get('is') + ' to the thesaurus.');
         },
 
         getAsClass: function() {

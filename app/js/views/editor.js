@@ -16,7 +16,7 @@ define([
         el: '#editor',
 
         initialize: function () {
-            this.words = WordCollection;
+            this.words = new WordCollection;
 
             this.charWidth  = 12;
             this.lineHeight = 24;
@@ -125,43 +125,26 @@ define([
             if (this.mode === 'hotkey') {
                 this.textarea.keydown('space', function () { this.synonyms.clearLists(); });
                 this.textarea.keydown(this.hotkey, function () {
-                    summonList(editor.getWordInfo());
+                    editor.summonList(editor.getWordInfo());
                 });
             } else if (this.mode === 'auto') {
                 this.textarea.keydown(this.hotkey, function () { return true; });
                 this.textarea.keydown('space', function () {
-                    summonList(editor.getWordInfo(-1));
+                    editor.summonList(editor.getWordInfo(-1));
                 });
-            }
-
-            function summonList(wordInfo) {
-                if (wordInfo) {
-                    var word = editor.getWordObject(wordInfo.word),
-                           x = wordInfo.start * editor.charWidth,
-                           y = wordInfo.line * editor.lineHeight;
-
-                    editor.synonyms.clearLists();
-                    editor.synonyms.render(word, 0, x, y);
-                    editor.synonyms.source = wordInfo;
-                }
             }
         },
 
-        setHotkeyMode: function () {
-            this.textarea.keydown('ctrl+shift+space', function () {
-                editor.synonyms.clearLists();
+        summonList: function (wordInfo) {
+            if (wordInfo) {
+                var word = this.words.getWord(wordInfo.word),
+                       x = wordInfo.start * this.charWidth,
+                       y = wordInfo.line * this.lineHeight;
 
-                var wordInfo = editor.getWordInfo();
-
-                if (wordInfo) {
-                    var word = editor.getWordObject(wordInfo.word),
-                           x = wordInfo.start * editor.charWidth,
-                           y = wordInfo.line * editor.lineHeight;
-
-                    editor.synonyms.render(word, 0, x, y);
-                    editor.synonyms.source = wordInfo;
-                }
-            });
+                this.synonyms.clearLists();
+                this.synonyms.render(word, 0, x, y);
+                this.synonyms.source = wordInfo;
+            }
         },
 
         insert: function (wordStr) {
@@ -258,34 +241,6 @@ define([
                 range.moveStart('character', index);
                 range.select();
             }
-        },
-
-        getWordObject: function (wordStr) {
-            var editor = this,
-                word = editor.words.find(function (word) {
-                    return word.get('is') === wordStr;
-                });
-
-            if (!word) {
-                editor.words.add({ is: wordStr }, { at: 0 });
-                word = editor.words.at(0);
-
-                // Populate the new word's synonyms with data from the api
-                $.ajax('http://localhost:8080/thesaurus?word=' + wordStr, {
-                    success: function (data) {
-                        var wordData = data[wordStr];
-
-                        if (wordData) {
-                            word.set({ synonyms: wordData });
-                        } else {
-                            editor.handleNewWord(wordStr);
-                        }
-                    },
-                    error: function (request, stat, err) { console.log(err); },
-                });
-            }
-
-            return word;
         }
     });
 
