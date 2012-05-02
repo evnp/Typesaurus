@@ -13,7 +13,7 @@ define([
 
         // If the word exists clientside, return it.
         // Otherwise get it from the thesaurus.
-        getWord: function (str) {
+        getFrom: function (str) {
             return this.where(  { is: str })[0] ||
                    this.prepend({ is: str });
         },

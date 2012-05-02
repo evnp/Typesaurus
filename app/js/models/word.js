@@ -5,6 +5,39 @@ define([
 
 ], function($, _, Backbone) {
 
+    /*
+    Word Object Structure:
+    {
+        is: 'word',
+        types: [
+            'noun',
+            'verb',
+            ...
+        ],
+        noun: {
+            syn: [
+                'word',
+                'word',
+                 {
+                    is: 'word',
+                    rank: <number>
+                },
+                'word',
+                ...
+            ],
+            rel: [
+                'word',
+                'word',
+                ...
+            ]
+        },
+        verb: {
+            syn: ...
+            rel: ...
+        }
+    }
+    */
+
     var Word = Backbone.Model.extend({
 
         thesaurus_url: 'http://localhost:8080/thesaurus',
@@ -27,40 +60,42 @@ define([
             });
         },
 
-        addSynonym: function(newSyn) {
-            // Normalize as a dict with rating 0 unless it is specified
-            newSyn = (typeof newSyn === 'string') ? { is: newSyn } : newSyn;
-            if (!newSyn.rating) { newSyn.rating = 0; }
-
-            var synonyms = this.get('synonyms');
-
-            // Insert the new synonym in front of the first one found
-            // that has an equal or lower rating.
-            synonyms.splice(_.find(synonyms, function(syn) {
-                return syn.rating <= newSyn.rating;
-            }), 0, newSyn);
-
-            this.set({ synonyms: synonyms });
+        // Gets string form of linked word at 'index'
+        // in list selected via wordType + listType
+        getSynonym: function(wordType, listType, index) {
+            var word = this.getSynonymList(wordType, listType)[index];
+            return word ? (word.is || word) : null;
         },
 
-        getSynonym: function(index) {
-            return this.get('synonyms')[index];
-        },
-
+        // Gets multiple linked words from list selected via wordtype + listType
         // Accepts to/from parameters, just to, or neither.
-        getSynonyms: function(to, from) {
-            var synonyms = this.get('synonyms');
-            return synonyms.splice(from || 0, to || synonyms.length);
+        getSynonyms: function(wordType, listType, to, from) {
+            var list  = this.getSynonymList(wordType, listType),
+                words = list.splice(from || 0, to || list.length);
+
+            for (var i = 0; i < words.length; i++) {
+                if (words[i].is) { words[i] = words[i].is; }
+            }
+            return words;
         },
+
+        // Returns a complete synonym or related word list based on
+        // wordType ('noun', 'verb', ...) and listType ('synonyms', 'related')
+        getSynonymList: function(wordType, listType) {
+            wordType = this.get(wordType);
+            return (wordType ? wordType[listType] : null) || []; 
+        }
 
         addToThesaurus: function() {
             console.log('Adding ' + this.get('is') + ' to the thesaurus.');
         },
 
-        getAsClass: function() {
+        toClass: function() {
             return this.classFrom(this.get('is'));
         },
 
+        // Returns wordStr with whitespace on either side removed, and any
+        // whitespace sequences inside replaced with single '-' characters.
         classFrom: function (wordStr) {
             var split = wordStr.split(/\W+/g);
 
@@ -70,6 +105,12 @@ define([
             }
 
             return split.join('-');
+        },
+
+        // Return the first type of the word, or null if it doesn't exist
+        defaultType: function () {
+            var types = this.get('types');
+            return types ? types[0] : null;
         }
     });
 
