@@ -44,8 +44,8 @@ define([
 
         initialize: function(attributes){
             var word = this
-                wordIs = this.get('is'),
-                url = this.thesaurus_url;
+              , wordIs = this.get('is')
+              , url = this.thesaurus_url;
 
             $.ajax(url + '?word=' + wordIs, {
                 success: function (response) {
@@ -71,7 +71,7 @@ define([
         // Accepts to/from parameters, just to, or neither.
         getSynonyms: function(wordType, listType, to, from) {
             var list  = this.getSynonymList(wordType, listType),
-                words = list.splice(from || 0, to || list.length);
+                words = list.slice(from || 0, to || list.length);
 
             for (var i = 0; i < words.length; i++) {
                 if (words[i].is) { words[i] = words[i].is; }
@@ -84,7 +84,7 @@ define([
         getSynonymList: function(wordType, listType) {
             wordType = this.get(wordType);
             return (wordType ? wordType[listType] : null) || []; 
-        }
+        },
 
         addToThesaurus: function() {
             console.log('Adding ' + this.get('is') + ' to the thesaurus.');
@@ -105,6 +105,11 @@ define([
             }
 
             return split.join('-');
+        },
+
+        // Return type if the word has it, the word's default type if not
+        normalizeType: function (type) {
+            return (type in this.get('types')) ? type : this.defaultType();
         },
 
         // Return the first type of the word, or null if it doesn't exist

@@ -12,13 +12,14 @@ define([
         el: '#controls',
 
         render: function(editor){
+            var view = this;
 
             this.$el.html(_.template( controlsTemplate, {} ));
 
             this.$('#hotkey-auto-switch input').change(function (e) {
                 var id = e.target.id,
-                    hotkey = $('#hotkey-controls', el),
-                    auto = $('#auto-controls', el);
+                    hotkey = $('#hotkey-controls', view.el),
+                    auto = $('#auto-controls', view.el);
 
                 if (id === 'auto') {
                     hotkey.fadeOut();

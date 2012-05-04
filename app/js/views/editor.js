@@ -102,17 +102,13 @@ define([
                 });
             }
 
-            var clearFunction = function () {
-                editor.synonyms.clearLists();
-            }
-
-            this.textarea.keydown('space',     clearFunction);
-            this.textarea.keydown('return',    clearFunction);
-            this.textarea.keydown('backspace', clearFunction);
+            this.textarea.keydown('space',     function () { editor.synonyms.clear; });
+            this.textarea.keydown('return',    function () { editor.synonyms.clear; });
+            this.textarea.keydown('backspace', function () { editor.synonyms.clear; });
 
             this.textarea.keydown(function (e) {
                 // Covers all character keys
-                if (e.which >= 44 && e.which <= 222) { clearFunction(); }
+                if (e.which >= 44 && e.which <= 222) { editor.synonyms.clear(); }
             });
         },
 
@@ -123,7 +119,7 @@ define([
             this.hotkey = this.hotkey || 'ctrl+shift+space';
 
             if (this.mode === 'hotkey') {
-                this.textarea.keydown('space', function () { this.synonyms.clearLists(); });
+                this.textarea.keydown('space', function () { this.synonyms.clear(); });
                 this.textarea.keydown(this.hotkey, function () {
                     editor.summonList(editor.getWordInfo());
                 });
@@ -137,13 +133,17 @@ define([
 
         summonList: function (wordInfo) {
             if (wordInfo) {
-                var word = this.words.getWord(wordInfo.word),
-                       x = wordInfo.start * this.charWidth,
-                       y = wordInfo.line * this.lineHeight;
+                var editor = this
+                  , word = editor.words.getFrom(wordInfo.word)
+                  ,    x = wordInfo.start * this.charWidth
+                  ,    y = wordInfo.line * this.lineHeight;
 
-                this.synonyms.clearLists();
-                this.synonyms.render(word, 0, x, y);
-                this.synonyms.source = wordInfo;
+                // Get the synonym view ready for a new list tree
+                editor.synonyms.clear();
+                editor.synonyms.context = wordInfo;
+                editor.synonyms.context.word = word;
+
+                editor.synonyms.render(word, 0, x, y);
             }
         },
 
@@ -228,7 +228,7 @@ define([
             return pos;
         },
 
-        setCaretPosition: function(index) {
+        setCaretPosition: function (index) {
             this.textarea.focus();
             var el = this.textarea.el;
 
@@ -241,6 +241,10 @@ define([
                 range.moveStart('character', index);
                 range.select();
             }
+        },
+
+        predictType: function (context) {
+            return context.word.defaultType();
         }
     });
 

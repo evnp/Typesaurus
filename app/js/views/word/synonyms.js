@@ -3,9 +3,10 @@ define([
     'underscore',
     'backbone',
 
-    'text!templates/word/synonyms.html'
+    'text!templates/word/synonyms/container.html',
+    'text!templates/word/synonyms/list.html'
 
-], function($, _, Backbone, synonymsTemplate) {
+], function($, _, Backbone, synContainerTemplate, synListTemplate) {
 
     var SynonymView = Backbone.View.extend({
 
@@ -14,23 +15,33 @@ define([
         initialize: function () {
             this.sel   = {}; // Keeps track of selected item
             this.lists = []; // Keeps track of active list information
+
+            this.type = null;
+            // Stores the type of the word tree
+            // currently being examined (i.e. noun, verb).
+
+            this.context = null;
+            // Stores the context information on the
+            // source word for the current tree of lists.
         },
 
         render: function(word, level, x, y){
-            this.lists.push({ // Store new list information
+            var view = this;
+
+            // Create list information cache
+            this.lists.push({
                 word: word,
-                position: 0
+                position: 0,
+                listLength: 0
             });
 
-            this.$el.append(_.template(synonymsTemplate, {
-                level: level,
-                synonyms: word.getSynonyms(5),
-                classFrom: word.classFrom,
-                _: _
+            // Append the list container onto the contents of #synonym-container
+            this.$el.append(_.template(synContainerTemplate, {
+                _: _, level: level
             }));
 
-            var list = this.$('#' + level), // Get the new synonym list element
-                view = this;
+            // Get the new synonym list element
+            var list = this.$('#' + level);
 
             // Position the list
             list.css({
@@ -39,39 +50,50 @@ define([
             });
 
             // Set up navigation on the list
-            $('li', list).hover(function (e) { view.onMouseHover(e, list); });
             this.setUpNavigation(list, x, y);
 
-            // Set up word synonym update event
-            word.bind('change:synonyms', function () {
-                var ol = $('ol', list),
-                    pos = view.lists[level].position;
+            // Populate the list:
+            // If the word already has types, it is ready to be loaded from.
+            if (word.get('types')) {
+                populateList();
 
-                ol.empty();
+            } else { // Otherwise, wait until the word data is loaded
+                word.bind('change:types', function () { populateList(); });
+            }
 
-                _.each(word.getSynonyms(pos + 5, pos), function (synonym) {
-                    ol.append('<li class="' + word.classFrom(synonym) + '">' + synonym + '</li>');
+            // Use type prediction to find the correct synonyms
+            // and use them to populate the list.
+            function populateList () {
+                view.type = view.type || view.editor.predictType(view.context);
+
+                var predictedType = word.normalizeType(view.type)
+                  , synonyms = word.getSynonyms(predictedType, 'syn');
+
+                // Store the full synonym list length for
+                // use by list movement functions.
+                view.lists[level].listLength = synonyms.length;
+
+                // Populate the list
+                $('ol', list).html(_.template(synListTemplate, {
+                    synonyms: synonyms.slice(0, 5), // Get 1st 5 synonyms
+                    classFrom: word.classFrom,
+                    _: _
+                }));
+
+                // Set up mouse hover on the new li's
+                $('li', list).hover(function (e) {
+                    view.onMouseHover(e, list);
                 });
 
-                // New li's were created; reconfigure li events
-                $('li', list).hover(function (e) { view.onMouseHover(e, list); });
-
-                // Maintain the correct item selection through synonym update
-                if (view.sel.list && Number(view.sel.list.attr('id')) === level) {
-                    view.select($('li:nth-child(' + (view.sel.rank) + ')', ol),
-                                view.sel.rank);
-                }
-            });
+                // Select the first synonym
+                view.select($('ol li:first-child', list), 1, list);
+            }
 
             return list;
         },
 
-        onMouseHover: function (e, list) {
-            var item = $(e.target);
-            if (e.type === 'mouseenter') {
-                this.select(item, item.index() + 1, list);
-            }
-        },
+
+    /* * Navigation * */
 
         setUpNavigation: function (list, x, y) {
 
@@ -95,12 +117,13 @@ define([
             // Mouse
             $(list).click(lookUpSelected);
 
+
             // Clear all lists on any outside-list click
-            $(document).click(function () { view.clearLists(); });
+            $(document).click(function () { view.clear(); });
 
 
-            var view = this,
-                level = Number(list.attr('id'));
+            var view = this
+              , level = Number(list.attr('id'));
 
             function selectPrev(e) {
                 var item = view.sel.item.prev();
@@ -108,20 +131,20 @@ define([
                 if (item && item[0]) {
                     view.select(item, item.index() + 1);
                 } else if (view.lists[level].position) {
-                    view.moveList('up', list, level);
+                    view.move(list, level, 'up');
                     view.select($('ol li:first-child', list), 1, list);
                 }
                 return false;
             }
 
             function selectNext(e) {
-                var item = view.sel.item.next(),
-                    listData = view.lists[level];
+                var item = view.sel.item.next()
+                  , listData = view.lists[level];
 
                 if (item && item[0]) {
                     view.select(item, item.index() + 1);
-                } else if (listData.position + 5 < listData.word.get('synonyms').length) {
-                    view.moveList('down', list, level);
+                } else if (listData.position + 5 < listData.listLength) {
+                    view.move(list, level, 'down');
                     var newItem = $('ol li:last-child', list);
                     view.select(newItem, newItem.index() + 1);
                 }
@@ -147,9 +170,9 @@ define([
             }
 
             function closeList() {
-                var word = view.lists[level].word,
-                    previous = view.clearLists(level),
-                    prevItem = $('ol li.' + word.getAsClass(), previous);
+                var word = view.lists[level].word
+                  , previous = view.clear(level)
+                  , prevItem = $('ol li.' + word.toClass(), previous);
 
                 if (previous) {
                     if (prevItem && prevItem[0]) {
@@ -175,6 +198,16 @@ define([
             }
         },
 
+        onMouseHover: function (e, list) {
+            var item = $(e.target);
+            if (e.type === 'mouseenter') {
+                this.select(item, item.index() + 1, list);
+            }
+        },
+
+
+    /* * Synonym Actions * */
+
         select: function (item, rank, list) {
             if (this.sel.item) { this.sel.item.removeClass('selected'); }
             if (item) { item.addClass('selected'); }
@@ -187,11 +220,10 @@ define([
         },
 
         lookUp: function(item, rank, listData) {
-            var word = this.editor.getWordObject(this.getWordStr(item));
 
-            this.clearLists(listData.level + 1); // Clear all lower lists
+            this.clear(listData.level + 1); // Clear all lower lists
 
-            var list = this.render(word,
+            var list = this.render(this.editor.words.getFrom(this.getWordStr(item)),
                                    listData.level + 1,
                                    listData.x + listData.width + 1,
                                    listData.y + ((rank - 1) * item.height()));
@@ -200,19 +232,25 @@ define([
         },
 
         insert: function (item) {
-            this.clearLists();
+            this.clear();
             this.editor.insert(this.getWordStr(item));
         },
 
-        moveList: function (direction, list, level) {
+
+    /* * List Actions * */
+
+        move: function (list, level, direction) {
             var movingDown = direction === 'down';
 
             this.lists[level].position += movingDown ? 1 : -1;
 
-            var ol = $('ol', list),
-                listData = this.lists[level];
-                newSyn = listData.word.getSynonym((movingDown ? 5 : 1) + listData.position - 1),
-                li = '<li class="' + newSyn + '">' + newSyn + '</li>';
+            var ol = $('ol', list)
+              , listData = this.lists[level]
+              , word     = listData.word
+              , type     = word.normalizeType(this.type)
+              , index    = (movingDown ? 5 : 1) + listData.position - 1
+              , synonym  = word.getSynonym(type, 'syn', index)
+              , li       = '<li class="' + synonym + '">' + synonym + '</li>';
 
             // Add the item that's shown by the move
             ol[ movingDown ? 'append' : 'prepend' ](li);
@@ -227,12 +265,12 @@ define([
             });
         },
 
-        clearLists: function (level) { // Remove all synonym lists at levels >= 'level'
+        clear: function (level) { // Remove all synonym lists at levels >= 'level'
             var lastRemaining,         // Returns lowest remaining list
                 level = level || 0;
 
-            // When clearing all lists, also clear the selection
-            if (level === 0) { this.clearSelection(); }
+            // When clearing all lists, reset the view
+            if (level === 0) { this.reset(); }
 
             // Reduce lists info cache down to remaining lists only
             this.lists = this.lists.slice(0, level);
@@ -251,10 +289,18 @@ define([
             return lastRemaining;
         },
 
-        clearSelection: function () {
-            this.sel   = {};
+
+    /* * Cleanup * */
+
+        // Clear the selection, type, and context
+        reset: function () {
+            this.initialize();
         },
 
+
+    /* * Utility * */
+
+        // Get the word string out of an li
         getWordStr: function (item) {
             return item.html();
         }
