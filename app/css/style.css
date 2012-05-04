@@ -61,7 +61,6 @@ input {
 .synonyms {
     background-color: #f0f7ff;
     border: 1px solid #2D768E;
-    margin-left: -27px;
 
   -moz-box-shadow:    -1px 1px 20px -7px #000;
   -webkit-box-shadow: -1px 1px 20px -7px #000;
@@ -78,14 +77,34 @@ input {
 }
 
 /* Remove decimal after ol numbering */
-.synonyms li { display: block; }
-.synonyms li:before {
+.synonyms ol li { display: block; }
+.synonyms ol li:before {
     content: counter(item) "  ";
     counter-increment: item
 }
 
 .synonyms li.loading:before {
     content: none;
+}
+
+/* Word Type Selection */
+.synonyms .word-types {
+    position: absolute;
+    top: 0;
+    width: 0;
+}
+
+.synonyms .word-types {
+    outline: none !important;
+}
+
+.synonyms .word-types div {
+    background-color: #f0f7ff;
+    border: 1px solid #2D768E;
+    margin-top: -1px;
+    padding: 3px 6px 3px 6px;
+    float: right;
+    clear: right;
 }
 
 /* Code to allow auto-resizing of editor */

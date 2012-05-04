@@ -4,9 +4,10 @@ define([
     'backbone',
 
     'text!templates/word/synonyms/container.html',
-    'text!templates/word/synonyms/list.html'
+    'text!templates/word/synonyms/list.html',
+    'text!templates/word/synonyms/types.html'
 
-], function($, _, Backbone, synContainerTemplate, synListTemplate) {
+], function($, _, Backbone, synContainerTemplate, synListTemplate, synTypesTemplate) {
 
     var SynonymView = Backbone.View.extend({
 
@@ -87,6 +88,14 @@ define([
 
                 // Select the first synonym
                 view.select($('ol li:first-child', list), 1, list);
+
+                // If this is the root list, populate the word types list
+                if (level === 0) {
+                    list.append(_.template(synTypesTemplate, {
+                        types: word.get('types'),
+                        _: _
+                    }));
+                }
             }
 
             return list;
