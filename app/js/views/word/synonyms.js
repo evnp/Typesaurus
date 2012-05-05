@@ -3,11 +3,11 @@ define([
     'underscore',
     'backbone',
 
+    'views/word/types',
     'text!templates/word/synonyms/container.html',
-    'text!templates/word/synonyms/list.html',
-    'text!templates/word/synonyms/types.html'
+    'text!templates/word/synonyms/list.html'
 
-], function($, _, Backbone, synContainerTemplate, synListTemplate, synTypesTemplate) {
+], function($, _, Backbone, TypeView, synContainerTemplate, synListTemplate) {
 
     var SynonymView = Backbone.View.extend({
 
@@ -56,45 +56,22 @@ define([
             // Populate the list:
             // If the word already has types, it is ready to be loaded from.
             if (word.get('types')) {
-                populateList();
+                setupList();
 
             } else { // Otherwise, wait until the word data is loaded
-                word.bind('change:types', function () { populateList(); });
+                word.bind('change:types', function () { setupList(); });
             }
 
-            // Use type prediction to find the correct synonyms
-            // and use them to populate the list.
-            function populateList () {
+            function setupList () {
+
+                // Use type prediction to get the most likely word type
+                // and cooresponding synonyms.
                 view.type = view.type || view.editor.predictType(view.context);
+                view.populate(list, word, level);
 
-                var predictedType = word.normalizeType(view.type)
-                  , synonyms = word.getSynonyms(predictedType, 'syn');
-
-                // Store the full synonym list length for
-                // use by list movement functions.
-                view.lists[level].listLength = synonyms.length;
-
-                // Populate the list
-                $('ol', list).html(_.template(synListTemplate, {
-                    synonyms: synonyms.slice(0, 5), // Get 1st 5 synonyms
-                    classFrom: word.classFrom,
-                    _: _
-                }));
-
-                // Set up mouse hover on the new li's
-                $('li', list).hover(function (e) {
-                    view.onMouseHover(e, list);
-                });
-
-                // Select the first synonym
-                view.select($('ol li:first-child', list), 1, list);
-
-                // If this is the root list, populate the word types list
+                // If this is the root list, create the word types list
                 if (level === 0) {
-                    list.append(_.template(synTypesTemplate, {
-                        types: word.get('types'),
-                        _: _
-                    }));
+                    (new TypeView).render(view, list, word);
                 }
             }
 
@@ -247,6 +224,31 @@ define([
 
 
     /* * List Actions * */
+
+        populate: function(list, word, level) {
+            var view = this
+              , type = word.normalizeType(this.type)
+              , synonyms = word.getSynonyms(type, 'syn');
+
+            // Store the full synonym list length for
+            // use by list movement functions.
+            this.lists[level].listLength = synonyms.length;
+
+            // Populate the list
+            $('ol', list).html(_.template(synListTemplate, {
+                synonyms: synonyms.slice(0, 5), // Get 1st 5 synonyms
+                classFrom: word.classFrom,
+                _: _
+            }));
+
+            // Set up mouse hover on the new li's
+            $('li', list).hover(function (e) {
+                view.onMouseHover(e, list);
+            });
+
+            // Select the first synonym
+            this.select($('ol li:first-child', list), 1, list);
+        },
 
         move: function (list, level, direction) {
             var movingDown = direction === 'down';
