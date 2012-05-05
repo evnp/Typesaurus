@@ -9,8 +9,13 @@ for (i = 0; i < words.length; i++) { console.log(words[i]); }
 for (i = 0; i < words.length; i++) {
     db.words.save({
         is: words[i],
-        types: [
+        types: i%2 ? [
             'noun',
+            'verb'
+        ] : [
+            'noun',
+            'adjective',
+            'adverb',
             'verb'
         ],
         noun: {
