@@ -70,9 +70,10 @@ define([
                 view.populate(list, word, level);
 
                 // If this is the root list, create the word types list
-                if (level === 0) {
-                    (new TypeView).render(view, list, word);
-                }
+                if (level === 0) { (new TypeView).render(view, list, word); }
+
+                // If this is not the root list, select the first synonym
+                else { view.select($('ol li:first-child', list), 1, list); }
             }
 
             return list;
@@ -246,8 +247,7 @@ define([
                 view.onMouseHover(e, list);
             });
 
-            // Select the first synonym
-            this.select($('ol li:first-child', list), 1, list);
+
         },
 
         move: function (list, level, direction) {

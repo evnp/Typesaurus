@@ -49,15 +49,22 @@ define([
 
             $.ajax(url + '?word=' + wordIs, {
                 success: function (response) {
+                    console.log('gothere');
                     if (response && response.is === wordIs) {
                         word.set(response);
-                        console.log(word);
+                        word.setTypes();
                     } else {
                         word.addToThesaurus();
                     }
                 },
                 error: function (request, stat, err) { console.log(err); },
             });
+        },
+
+        setTypes: function () {
+            var keys = [];
+            for (var k in this.attributes) keys.push(k);
+            this.set('types', _.difference(keys, ['is', '_id']));
         },
 
         // Gets string form of linked word at 'index'
@@ -109,7 +116,7 @@ define([
 
         // Return type if the word has it, the word's default type if not
         normalizeType: function (type) {
-            return (type in this.get('types')) ? type : this.defaultType();
+            return (this.get('types').indexOf(type) >= 0) ? type : this.defaultType();
         },
 
         // Return the first type of the word, or null if it doesn't exist

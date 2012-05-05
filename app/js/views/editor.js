@@ -119,12 +119,11 @@ define([
             this.hotkey = this.hotkey || 'ctrl+shift+space';
 
             if (this.mode === 'hotkey') {
-                this.textarea.keydown('space', function () { this.synonyms.clear(); });
+                this.textarea.keydown('space', function () { editor.synonyms.clear(); });
                 this.textarea.keydown(this.hotkey, function () {
                     editor.summonList(editor.getWordInfo());
                 });
             } else if (this.mode === 'auto') {
-                this.textarea.keydown(this.hotkey, function () { return true; });
                 this.textarea.keydown('space', function () {
                     editor.summonList(editor.getWordInfo(-1));
                 });
