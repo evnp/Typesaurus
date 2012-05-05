@@ -47,6 +47,43 @@ function handleWordQuery(request, response) {
     }
 }
 
+function accessApi(word, response) {
+
+    if (apiKey) {
+        var url = 'http://words.bighugelabs.com/api/2/' + apiKey + '/' + word + '/json';
+
+        request(url, function (error, headers, body) {
+            if (!error && headers.statusCode == 200) {
+                try {
+                    // Create a new word object
+                    var wordObject = JSON.parse(body);
+                    wordObject.is  = word;
+
+                    // Send the word to the application
+                    response.writeHead(200, {'Content-type': 'text/json'});
+                    response.end(JSON.stringify(wordObject));
+
+                    // Save the word in the database
+                    thesaurus.words.save(wordObject, function (error, saved) {
+                        if (error || !saved) {
+                            console.error('There was a problem saving a word:');
+                            console.log(error);
+                            console.log(wordObject);
+                        }
+                    });
+                } catch (e) {
+                    console.error('There was a parse error:');
+                    console.log(e);
+                }
+            } else {
+                console.error('API access error:');
+                console.log(error);
+                console.log(headers);
+            }
+        });
+    }
+}
+
 function handleWordUpdate(request, response) {
     var words       = processRequest(request),
         original    = words.original,
@@ -93,43 +130,6 @@ function processRequest(request) {
     function processPost(data) {
         return ('original' in data.query && 'replacement' in data.query) ?
             data.query : null;
-    }
-}
-
-function accessApi(word, response) {
-
-    if (apiKey) {
-        var url = 'http://words.bighugelabs.com/api/2/' + apiKey + '/' + word + '/json';
-
-        request(url, function (error, headers, body) {
-            if (!error && headers.statusCode == 200) {
-                try {
-                    // Create a new word object
-                    var wordObject = JSON.parse(body);
-                    wordObject.is  = word;
-
-                    // Send the word to the application
-                    response.writeHead(200, {'Content-type': 'text/json'});
-                    response.end(JSON.stringify(wordObject));
-
-                    // Save the word in the database
-                    thesaurus.words.save(wordObject, function (error, saved) {
-                        if (error || !saved) {
-                            console.error('There was a problem saving a word:');
-                            console.log(error);
-                            console.log(wordObject);
-                        }
-                    });
-                } catch (e) {
-                    console.error('There was a parse error:');
-                    console.log(e);
-                }
-            } else {
-                console.error('API access error:');
-                console.log(error);
-                console.log(headers);
-            }
-        });
     }
 }
 
