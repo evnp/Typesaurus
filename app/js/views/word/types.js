@@ -67,11 +67,20 @@ define([
                 var target = $(e.target)
 
                 if (e.type === 'mouseenter') {
+                    if (target.html() !== view.item.html()) {
+                        view.colorize(target, 'hover');
+                    }
                     view.extend(target);
 
-                // Leave the tag out if it's selected
-                } else if (e.type === 'mouseleave' && target === this.item) {
-                    view.retract(target);
+                } else if (e.type === 'mouseleave') {
+
+                    // Leave the tag out if it's selected
+                    console.log(view.item.html());
+                    console.log(target.html());
+                    if (target.html() !== view.item.html()) {
+                        view.retract(target);
+                        view.colorize(target);
+                    }
                 }
             });
 
@@ -103,30 +112,14 @@ define([
 
         select: function (item) {
             if (this.item) {
-                // Return the tag to it's default position
+                // Return the item to it's default state
                 this.retract(this.item);
-
-                // Colorize
-                this.item.animate({
-                    'color': '#ffffff',
-                    'background-color': '#0189b0'
-                },{
-                    duration: 200,
-                    queue: false
-                });
-                console.log('second');
+                this.colorize(this.item);
 
                 this.item.css('z-index', -2);
             }
 
-            // Colorize
-            item.animate({
-                'color': '#0189b0',
-                'background-color': '#f0f7ff'
-            },{
-                duration: 200,
-                queue: false
-            });
+            this.colorize(item, 'select');
 
             item.css('z-index', -1);
             this.item = item;
@@ -150,6 +143,21 @@ define([
                 'margin-right': 0
             },{
                 duration: 400,
+                queue: false
+            });
+        },
+
+        colorize: function(item, state) {
+            item.animate({
+                color:
+                    (state === 'select' ? '#0189b0' :
+                                          '#ffffff' ),
+                backgroundColor:
+                    (state === 'select' ? '#f0f7ff' :
+                    (state === 'hover'  ? '#2ea5c7' :
+                                          '#0189b0' ))
+            },{
+                duration: 200,
                 queue: false
             });
         }
