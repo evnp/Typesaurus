@@ -15,9 +15,14 @@ input              { color: #0189B0; }
     background-color: #FF4F00;
 }
 
-.word-types .selected {
+.word-types div {
     color: #ffffff;
     background-color: #0189B0 !important;
+}
+
+.word-types .selected {
+    color:  #0189B0;
+    background-color: #f0f7ff !important;
 }
 
 ::-webkit-input-placeholder { color: #0189B0; }
@@ -66,10 +71,18 @@ input {
 .synonyms {
     background-color: #f0f7ff;
     border: 1px solid #2D768E;
+}
 
-  -moz-box-shadow:    -1px 1px 20px -7px #000;
-  -webkit-box-shadow: -1px 1px 20px -7px #000;
-  box-shadow:         -1px 1px 20px -7px #000;
+.synonyms .shadow {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -4;
+
+   -moz-box-shadow:    -1px 1px 20px -7px #000;
+   -webkit-box-shadow: -1px 1px 20px -7px #000;
+    box-shadow:        -1px 1px 20px -7px #000;
 }
 
 .synonyms ol {
@@ -103,18 +116,18 @@ input {
 
 .synonyms .word-types div {
     position: relative;
-    z-index: -2;
-    background-color: #f0f7ff;
+    z-index: -3;
     border: 1px solid #2D768E;
+    border-right-color: #f0f7ff;
     margin-top: -1px;
     padding: 3px 6px 3px 6px;
     display: inline-block;
     float: left;
     clear: both;
 
-  -moz-box-shadow:    -1px 1px 20px -7px #000;
+  /*-moz-box-shadow:    -1px 1px 20px -7px #000;
   -webkit-box-shadow: -1px 1px 20px -7px #000;
-  box-shadow:         -1px 1px 20px -7px #000;
+  box-shadow:         -1px 1px 20px -7px #000;*/
 }
 
 /* Code to allow auto-resizing of editor */
