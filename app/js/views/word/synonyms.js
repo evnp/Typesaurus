@@ -246,8 +246,6 @@ define([
             $('li', list).hover(function (e) {
                 view.onMouseHover(e, list);
             });
-
-
         },
 
         move: function (list, level, direction) {

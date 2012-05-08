@@ -2,10 +2,11 @@ define([
     'jquery',
     'underscore',
     'backbone',
+    'jqcolor',
 
     'text!templates/word/synonyms/types.html'
 
-], function($, _, Backbone, synTypesTemplate) {
+], function($, _, Backbone, jQueryColor, synTypesTemplate) {
 
     var TypeView = Backbone.View.extend({
 
@@ -69,7 +70,7 @@ define([
                     view.extend(target);
 
                 // Leave the tag out if it's selected
-                } else if (e.type === 'mouseleave' && !target.hasClass('selected')) {
+                } else if (e.type === 'mouseleave' && target === this.item) {
                     view.retract(target);
                 }
             });
@@ -109,19 +110,24 @@ define([
                 this.item.animate({
                     'color': '#ffffff',
                     'background-color': '#0189b0'
-                }, 200);
+                },{
+                    duration: 200,
+                    queue: false
+                });
+                console.log('second');
 
-                this.item.removeClass('selected');
                 this.item.css('z-index', -2);
             }
 
             // Colorize
             item.animate({
-                'color': '#ffffff',
-                'background-color': '#0189b0'
-            }, 200);
+                'color': '#0189b0',
+                'background-color': '#f0f7ff'
+            },{
+                duration: 200,
+                queue: false
+            });
 
-            item.addClass('selected');
             item.css('z-index', -1);
             this.item = item;
         },
@@ -132,14 +138,20 @@ define([
                 'margin-left': -(item.outerWidth() +
                     Number($('.word-types', this.synList)
                         .css('left').replace(/[^-\d\.]/g, '')))
-            }, 200);
+            },{
+                duration: 200,
+                queue: false
+            });
         },
 
         retract: function(item) {
             item.animate({
                 'margin-left': 0,
                 'margin-right': 0
-            }, 400);
+            },{
+                duration: 400,
+                queue: false
+            });
         }
     });
 

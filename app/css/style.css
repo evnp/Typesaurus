@@ -15,16 +15,6 @@ input              { color: #0189B0; }
     background-color: #FF4F00;
 }
 
-.word-types div {
-    color: #ffffff;
-    background-color: #0189B0 !important;
-}
-
-.word-types .selected {
-    color:  #0189B0;
-    background-color: #f0f7ff !important;
-}
-
 ::-webkit-input-placeholder { color: #0189B0; }
 :-moz-placeholder           { color: #0189B0; }
 
@@ -119,6 +109,8 @@ input {
     z-index: -3;
     border: 1px solid #2D768E;
     border-right-color: #f0f7ff;
+    color: #ffffff;
+    background-color: #0189b0;
     margin-top: -1px;
     padding: 3px 6px 3px 6px;
     display: inline-block;
