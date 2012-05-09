@@ -67,6 +67,15 @@ define([
             this.set('types', _.difference(keys, ['is', '_id']));
         },
 
+        getPluralizedTypes: function () {
+            return _.map(this.get('types'), function (word) {
+                var last = word.charAt(word.length - 1);
+                return word + ((last === 's' ||
+                                last === 'x' ||
+                                last === 'h') ? 'es' : 's');
+            });
+        },
+
         // Gets string form of linked word at 'index'
         // in list selected via wordType + listType
         getSynonym: function(wordType, listType, index) {

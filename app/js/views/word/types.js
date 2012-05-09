@@ -14,7 +14,8 @@ define([
 
             // Render the list
             synList.append(_.template(synTypesTemplate, {
-                types: word.get('types'),
+                typeContent: word.getPluralizedTypes(),
+                typeClasses: word.get('types'),
                 _: _
             }));
 
@@ -75,8 +76,6 @@ define([
                 } else if (e.type === 'mouseleave') {
 
                     // Leave the tag out if it's selected
-                    console.log(view.item.html());
-                    console.log(target.html());
                     if (target.html() !== view.item.html()) {
                         view.retract(target);
                         view.colorize(target);
@@ -86,15 +85,15 @@ define([
 
             // Set up type switching
             $('.word-types div', synList).click(function (e) {
-                var newType = $(e.target).html();
+                var typeItem  = $(e.target, synList)
+                  , typeStr = typeItem.attr('class');
 
-                if (newType !== synView.type
-                &&  word.get('types').indexOf(newType) >= 0) {
+                if (typeStr !== synView.type) {
 
                     // Select the new type item
-                    view.select($('.word-types .' + newType, synList));
+                    view.select(typeItem);
 
-                    synView.type = newType;
+                    synView.type = typeStr;
                     synView.clear(1); // Clear all but the first synonym list
 
                     synView.populate(synList, word, 0);

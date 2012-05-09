@@ -1,6 +1,6 @@
 <div class='word-types'>
-    <% _.each(types, function (type) { %>
-    <%= '<div class="' + type + '">' + type + '</div>' %>
+    <% _.each(_.zip(typeContent, typeClasses), function (type) { %>
+    <%= '<div class="' + type[1] + '">' + type[0] + '</div>' %>
     <% }); %>
 </div>
 
