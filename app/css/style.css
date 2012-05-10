@@ -97,6 +97,7 @@ input {
 
 /* Word Type Selection */
 .synonyms .word-types {
+    outline: none !important;
     position: absolute;
     top: 0;
     left: 0;

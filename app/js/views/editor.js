@@ -82,7 +82,7 @@ define([
                 var list = $('#0', editor.synonyms.el);
 
                 if (list && list[0]) {
-                    editor.synonyms.select($('ol li:first-child'), 1, list);
+                    editor.synonyms.select($('ol li:first-child', list), 1, list);
                     return false;
                 } else { return true; }
             }

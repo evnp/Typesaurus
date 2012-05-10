@@ -70,7 +70,9 @@ define([
                 view.populate(list, word, level);
 
                 // If this is the root list, create the word types list
-                if (level === 0) { (new TypeView).render(view, list, word); }
+                if (level === 0) {
+                    view.typeList = (new TypeView).render(view, list, word);
+                }
 
                 // If this is not the root list, select the first synonym
                 else { view.select($('ol li:first-child', list), 1, list); }
@@ -88,7 +90,7 @@ define([
             $(list).keydown('up',    selectPrev);
             $(list).keydown('down',  selectNext);
             $(list).keydown('right', lookUpSelected);
-            $(list).keydown('left',  closeList);
+            $(list).keydown('left',  onLeftArrow);
 
             // Number Keys
             for (var i = 1; i < 6; i++) {
@@ -103,7 +105,6 @@ define([
 
             // Mouse
             $(list).click(lookUpSelected);
-
 
             // Clear all lists on any outside-list click
             $(document).click(function () { view.clear(); });
@@ -156,6 +157,14 @@ define([
                 return false;
             }
 
+            function onLeftArrow() {
+                if (level > 0) { closeList(); }
+                else {
+                    view.deselect();
+                    view.typeList.prepareForKeyNav();
+                }
+            }
+
             function closeList() {
                 var word = view.lists[level].word
                   , previous = view.clear(level)
@@ -196,9 +205,9 @@ define([
     /* * Synonym Actions * */
 
         select: function (item, rank, list) {
-            if (this.sel.item) { this.sel.item.removeClass('selected'); }
-            if (item) { item.addClass('selected'); }
+            this.deselect();
 
+            if (item) { item.addClass('selected'); }
             this.sel.item = item;
             this.sel.rank = rank;
 
@@ -206,7 +215,12 @@ define([
             this.sel.list.focus();
         },
 
+        deselect: function () {
+            if (this.sel.item) { this.sel.item.removeClass('selected'); }
+        },
+
         lookUp: function(item, rank, listData) {
+            console.log('looking up');
 
             this.clear(listData.level + 1); // Clear all lower lists
 

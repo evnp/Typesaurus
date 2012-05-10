@@ -26,6 +26,7 @@ define([
               , view = this;
 
             this.synList = synList;
+            this.setElement(container);
 
             // Animate list addition
             container.css({
@@ -84,11 +85,12 @@ define([
             });
 
             // Set up type switching
-            $('.word-types div', synList).click(function (e) {
-                var typeItem  = $(e.target, synList)
-                  , typeStr = typeItem.attr('class');
+            function switchToType(typeItem) {
+                var typeStr = typeItem.attr('class');
 
-                if (typeStr !== synView.type) {
+                if (typeItem && typeItem.is('div')
+                 && typeItem.attr('id') !== 'falseBorder'
+                 && typeStr !== synView.type) {
 
                     // Select the new type item
                     view.select(typeItem);
@@ -98,13 +100,37 @@ define([
 
                     synView.populate(synList, word, 0);
 
-                    // Length of the synonym list may change, so resize            
+                    // Length of the synonym list may change, so resize
                     $('#falseBorder').css('height', synList.outerHeight() + 'px');
                 }
 
-                // Prevent from registering as click on the synonym list
+                return false;
+            }
+
+            $('.word-types div', synList).click(function (e) {
+                return switchToType($(e.target, synList));
+            });
+
+            this.$el.keydown('down', function () {
+                var item = view.item.next();
+
+                switchToType(item);
                 return false;
             });
+
+            this.$el.keydown('up', function () {
+                var item = view.item.prev();
+
+                switchToType(item);
+                return false;
+            });
+
+            this.$el.keydown('right', function () {
+                synView.select($('ol li:first-child', synList), 1, synList);
+                return false;
+            });
+
+            this.$el.keydown('left', function () { return false; });
 
             return this;
         },
@@ -118,31 +144,51 @@ define([
                 this.item.css('z-index', -2);
             }
 
+            this.extend(item);
             this.colorize(item, 'select');
 
             item.css('z-index', -1);
             this.item = item;
         },
 
-        extend: function(item) {
+        extend: function(item, offset) {
             item.animate({
-                'margin-right': this.synList.outerWidth(),
-                'margin-left': -(item.outerWidth() +
+                'margin-right': this.synList.outerWidth() + (offset ? offset : 0),
+                'margin-left': -(item.outerWidth() +        (offset ? offset : 0) +
                     Number($('.word-types', this.synList)
-                        .css('left').replace(/[^-\d\.]/g, '')))
+                        .css('left').replace(/[^-\d\.]/g, ''))),
+                'padding-right': (offset ? offset : 0) +
+                    Number(item.css('padding-right').replace(/[^-\d\.]/g, ''))
             },{
                 duration: 200,
                 queue: false
             });
         },
 
-        retract: function(item) {
+        extendAll: function (extra) {
+            var view = this;
+
+            _.each($('.word-types div', this.synList), function extend(item) {
+                item = $(item, this.synList);
+
+                if (item.attr('id') !== 'falseBorder') {
+                    view.extend(item, extra);
+                }
+            });
+        },
+
+        retract: function (item) {
             item.animate({
                 'margin-left': 0,
-                'margin-right': 0
+                'margin-right': 0,
+                'padding-right': 6
             },{
                 duration: 400,
-                queue: false
+                queue: false,
+                complete: function () {
+                    // Remove 'hint' arrow if the item has one
+                    item.html(item.html().replace(/\W/g, ''));
+                }
             });
         },
 
@@ -159,6 +205,12 @@ define([
                 duration: 200,
                 queue: false
             });
+        },
+
+        prepareForKeyNav: function () {
+            // Add arrow key 'hint'
+            this.extend(this.item.append('↕'), -7);
+            this.$el.focus();
         }
     });
 
