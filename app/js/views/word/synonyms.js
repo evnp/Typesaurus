@@ -181,6 +181,7 @@ define([
                         view.select($('ol li:first-child', previous), 1, previous);
                     }
                 }
+
                 return false;
             }
 
@@ -192,12 +193,16 @@ define([
 
             function onNumPress(e) {
                 var numPressed = e.which - 48;
-                if (numPressed === view.sel.rank) {
-                    insertSelected();
-                } else {
-                    var item = $('ol li:nth-child(' + numPressed + ')', e.target);
+
+                if (numPressed === view.sel.rank) { insertSelected(); }
+                else {
+                    var el = $(e.target)
+                      , list = el.hasClass('synonyms') ? el : el.parent()
+                      , item = $('ol li:nth-child(' + numPressed + ')', list);
+
                     view.select(item, numPressed);
                 }
+
                 return false;
             }
         },

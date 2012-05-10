@@ -132,6 +132,12 @@ define([
 
             this.$el.keydown('left', function () { return false; });
 
+            this.$el.blur(function () {
+                if (view.hasHint(view.item)) {
+                    view.removeHintFrom(view.item);
+                }
+            });
+
             return this;
         },
 
@@ -151,17 +157,17 @@ define([
             this.item = item;
         },
 
-        extend: function(item, offset) {
+        extend: function(item, offset, callback) {
             item.animate({
                 'margin-right': this.synList.outerWidth() + (offset ? offset : 0),
                 'margin-left': -(item.outerWidth() +        (offset ? offset : 0) +
                     Number($('.word-types', this.synList)
                         .css('left').replace(/[^-\d\.]/g, ''))),
-                'padding-right': (offset ? offset : 0) +
-                    Number(item.css('padding-right').replace(/[^-\d\.]/g, ''))
+                'padding-right': 6 + (offset ? offset : 0)
             },{
                 duration: 200,
-                queue: false
+                queue: false,
+                complete: callback
             });
         },
 
@@ -177,7 +183,7 @@ define([
             });
         },
 
-        retract: function (item) {
+        retract: function (item, callback) {
             item.animate({
                 'margin-left': 0,
                 'margin-right': 0,
@@ -188,6 +194,7 @@ define([
                 complete: function () {
                     // Remove 'hint' arrow if the item has one
                     item.html(item.html().replace(/\W/g, ''));
+                    if (callback) { callback(); }
                 }
             });
         },
@@ -209,8 +216,23 @@ define([
 
         prepareForKeyNav: function () {
             // Add arrow key 'hint'
-            this.extend(this.item.append('↕'), -7);
+            this.extend(this.addHintTo(this.item), -7);
             this.$el.focus();
+        },
+
+        addHintTo: function (item) {
+            return item.append('↕');
+        },
+
+        removeHintFrom: function (item) {
+            this.extend(item, -11, function () {
+                item.html(item.html().replace(/\W/g, ''));
+                item.css('padding-right', 6);
+            });
+        },
+
+        hasHint: function (item) {
+            return Boolean(item.html().indexOf('↕') >= 0);
         }
     });
 
