@@ -98,7 +98,7 @@ define([
             }
 
             // Other Keys
-            $(list).keydown('space',  lookUpSelected);
+            $(list).keydown('space',  returnToTextarea);
             $(list).keydown('return', insertSelected);
             $(list).keydown('tab',    lookUpSelected);
             $(list).keydown('shift+tab', closeList);
@@ -121,7 +121,10 @@ define([
                 } else if (view.lists[level].position) {
                     view.move(list, level, 'up');
                     view.select($('ol li:first-child', list), 1, list);
-                }
+
+                // If this is the root list, go back to textarea.
+                } else if (level === 0) { returnToTextarea(); }
+
                 return false;
             }
 
@@ -166,20 +169,25 @@ define([
             }
 
             function closeList() {
-                var word = view.lists[level].word
-                  , previous = view.clear(level)
-                  , prevItem = $('ol li.' + word.toClass(), previous);
+                if (level === 0) { returnToTextarea(); }
+                else {
+                    var word = view.lists[level].word
+                      , previous = view.clear(level)
+                      , prevItem = $('ol li.' + word.toClass(), previous);
 
-                if (previous) {
                     if (prevItem && prevItem[0]) {
                         view.select(prevItem, prevItem.index() + 1, previous);
                     } else {
                         view.select($('ol li:first-child', previous), 1, previous);
                     }
-                } else {
-                    view.editor.textarea.focus();
                 }
                 return false;
+            }
+
+            function returnToTextarea() {
+                view.clear();
+                view.editor.textarea.focus();
+                return true;
             }
 
             function onNumPress(e) {
