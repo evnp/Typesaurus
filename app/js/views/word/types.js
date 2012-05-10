@@ -133,9 +133,7 @@ define([
             this.$el.keydown('left', function () { return false; });
 
             this.$el.blur(function () {
-                if (view.hasHint(view.item)) {
-                    view.removeHintFrom(view.item);
-                }
+                view.extend(view.item);
             });
 
             return this;
@@ -157,13 +155,23 @@ define([
             this.item = item;
         },
 
-        extend: function(item, offset, callback) {
+        extend: function(item, offset, hint, callback) {
+
+            if (hint) {
+                this.addHintTo(item);
+            } else if (this.hasHint(item)) {
+                this.removeHintFrom(item);
+            }
+
+            var itemWidth = this.getBaseTabWidthOf(item)
+              , synListWidth = this.synList.outerWidth();
+
             item.animate({
-                'margin-right': this.synList.outerWidth() + (offset ? offset : 0),
-                'margin-left': -(item.outerWidth() +        (offset ? offset : 0) +
+                'padding-right': 6 + (offset || 0),
+                'margin-right': synListWidth + (offset || 0),
+                'margin-left':   -(itemWidth + (offset || 0) +
                     Number($('.word-types', this.synList)
-                        .css('left').replace(/[^-\d\.]/g, ''))),
-                'padding-right': 6 + (offset ? offset : 0)
+                        .css('left').replace(/[^-\d\.]/g, '')))
             },{
                 duration: 200,
                 queue: false,
@@ -184,16 +192,17 @@ define([
         },
 
         retract: function (item, callback) {
+            var view = this;
+
             item.animate({
                 'margin-left': 0,
                 'margin-right': 0,
                 'padding-right': 6
             },{
-                duration: 400,
+                duration: 200,
                 queue: false,
                 complete: function () {
-                    // Remove 'hint' arrow if the item has one
-                    item.html(item.html().replace(/\W/g, ''));
+                    if (view.hasHint(item)) { view.removeHintFrom(item); }
                     if (callback) { callback(); }
                 }
             });
@@ -215,8 +224,8 @@ define([
         },
 
         prepareForKeyNav: function () {
-            // Add arrow key 'hint'
-            this.extend(this.addHintTo(this.item), -7);
+            // Boolean adds arrow key 'hint'
+            this.extend(this.item, -7, true);
             this.$el.focus();
         },
 
@@ -225,14 +234,22 @@ define([
         },
 
         removeHintFrom: function (item) {
-            this.extend(item, -11, function () {
-                item.html(item.html().replace(/\W/g, ''));
-                item.css('padding-right', 6);
-            });
+            item.html(item.html().replace(/\W/g, ''));
+
+            // Prevents gap from appearing when hint is removed
+            item.css('padding-right', 16);
         },
 
         hasHint: function (item) {
             return Boolean(item.html().indexOf('↕') >= 0);
+        },
+
+        getBaseTabWidthOf: function (item) {
+            var padding = item.css('padding-right');
+            item.css('padding-right', 6);
+            var width = item.outerWidth();
+            item.css('padding-right', padding);
+            return width;
         }
     });
 
