@@ -49,7 +49,6 @@ define([
 
             $.ajax(url + '?word=' + wordIs, {
                 success: function (response) {
-                    console.log('gothere');
                     if (response && response.is === wordIs) {
                         word.set(response);
                         word.setTypes();

@@ -16,6 +16,7 @@ define([
         initialize: function () {
             this.sel   = {}; // Keeps track of selected item
             this.lists = []; // Keeps track of active list information
+            this.words = []; // A set of all currently displayed words
 
             this.type = null;
             // Stores the type of the word tree
@@ -33,7 +34,7 @@ define([
             this.lists.push({
                 word: word,
                 position: 0,
-                listLength: 0
+                synonyms: []
             });
 
             // Append the list container onto the contents of #synonym-container
@@ -134,7 +135,7 @@ define([
 
                 if (item && item[0]) {
                     view.select(item, item.index() + 1);
-                } else if (listData.position + 5 < listData.listLength) {
+                } else if (listData.position + 5 < listData.synonyms.length) {
                     view.move(list, level, 'down');
                     var newItem = $('ol li:last-child', list);
                     view.select(newItem, newItem.index() + 1);
@@ -254,11 +255,20 @@ define([
         populate: function(list, word, level) {
             var view = this
               , type = word.normalizeType(this.type)
-              , synonyms = word.getSynonyms(type, 'syn');
+              , synonyms = word.getSynonyms(type, 'syn')
+              , displayed = this.getDisplayedWords()
+              , repeats = [];
 
-            // Store the full synonym list length for
+            // Find all synonyms that are already being displayed,
+            // and move them to the end of the list.
+            synonyms = _.filter(synonyms, function (syn) {
+                if (displayed.indexOf(syn) === -1) { return true; }
+                else { repeats.unshift(syn); return false; }
+            }).concat(repeats);
+
+            // Store the full synonym list for
             // use by list movement functions.
-            this.lists[level].listLength = synonyms.length;
+            this.lists[level].synonyms = synonyms;
 
             // Populate the list
             $('ol', list).html(_.template(synListTemplate, {
@@ -280,10 +290,8 @@ define([
 
             var ol = $('ol', list)
               , listData = this.lists[level]
-              , word     = listData.word
-              , type     = word.normalizeType(this.type)
               , index    = (movingDown ? 5 : 1) + listData.position - 1
-              , synonym  = word.getSynonym(type, 'syn', index)
+              , synonym  = listData.synonyms[index]
               , li       = '<li class="' + synonym + '">' + synonym + '</li>';
 
             // Add the item that's shown by the move
@@ -339,6 +347,25 @@ define([
         // Get the word string out of an li
         getWordStr: function (item) {
             return item.html();
+        },
+
+        // Get all synonyms currently being displayed by the list tree
+        getDisplayedWords: function () {
+            var words = []
+              , view  = this
+              , lists = this.lists.slice(); // use a copy of lists
+
+            lists.pop(); // Don't include the list that's about to be displayed
+
+            _.each(lists, function (list) {
+                words = _.union(words, list.word.getSynonyms(
+                    view.type, 'syn', list.position + 5, list.position
+                ));
+            });
+
+            // Add the source word
+            words.push(this.context.wordStr);
+            return words;
         }
     });
 
