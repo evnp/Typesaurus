@@ -108,7 +108,7 @@ define([
 
             this.textarea.keydown(function (e) {
                 // Covers all character keys
-                if (e.which >= 44 && e.which <= 222) { editor.synonyms.clear(); }
+                if (e.which >= 54 && e.which <= 222) { editor.synonyms.clear(); }
             });
         },
 
@@ -140,6 +140,7 @@ define([
                 // Get the synonym view ready for a new list tree
                 editor.synonyms.clear();
                 editor.synonyms.context = wordInfo;
+                editor.synonyms.context.wordStr = editor.synonyms.context.word;
                 editor.synonyms.context.word = word;
 
                 editor.synonyms.render(word, 0, x, y);
@@ -148,9 +149,9 @@ define([
 
         insert: function (wordStr) {
             var regex = new RegExp('((?:.*[\n]){' +
-                                    (this.synonyms.source.line - 1).toString() +
-                                   '}.{' + this.synonyms.source.start + '})' +
-                                    this.synonyms.source.word +
+                                    (this.synonyms.context.line - 1).toString() +
+                                   '}.{' + this.synonyms.context.start + '})' +
+                                    this.synonyms.context.wordStr +
                                    '([\\s\\S]*)'),
                 match = this.textarea.val().match(regex);
 

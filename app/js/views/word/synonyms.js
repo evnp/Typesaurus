@@ -233,8 +233,6 @@ define([
         },
 
         lookUp: function(item, rank, listData) {
-            console.log('looking up');
-
             this.clear(listData.level + 1); // Clear all lower lists
 
             var list = this.render(this.editor.words.getFrom(this.getWordStr(item)),
@@ -328,9 +326,11 @@ define([
 
     /* * Cleanup * */
 
-        // Clear the selection, type, and context
+        // Clear the selection and type
         reset: function () {
-            this.initialize();
+            this.sel   = {};
+            this.lists = [];
+            this.type = null;
         },
 
 
