@@ -40,10 +40,11 @@ define([
             this.createSynonymView();
 
             // Set up editor auto-resize
-            this.bindAutoResize();
+            this.setupAutoResize();
 
             // Bind synonym-menu hotkey and other events
-            this.bindHotkeys();
+            this.setupHotkeys();
+            this.setupCopyPaste();
 
             return this;
         },
@@ -53,7 +54,7 @@ define([
             this.synonyms.editor = this;
         },
 
-        bindAutoResize: function () {
+        setupAutoResize: function () {
             var textarea = this.textarea
 
             $(function () {
@@ -69,7 +70,7 @@ define([
             }
         },
 
-        bindHotkeys: function () {
+        setupHotkeys: function () {
             var editor = this;
 
             this.switchMode(); // Initially defaults to hotkey mode
@@ -109,6 +110,18 @@ define([
             this.textarea.keydown(function (e) {
                 // Covers all character keys
                 if (e.which >= 54 && e.which <= 222) { editor.synonyms.clear(); }
+            });
+        },
+
+        setupCopyPaste: function () {
+            var editor = this
+              , onCopy = function () { editor.onCopy(); };
+
+            this.textarea.keydown('ctrl+c', onCopy);
+            $(document).keydown(  'ctrl+c', onCopy);
+            $(document).keydown(  'ctrl+v', function () {
+                editor.textarea.focus();
+                return true;
             });
         },
 
@@ -209,8 +222,8 @@ define([
         },
 
         getCaretPosition: function () {
-            var pos = 0;
-            var input = this.textarea.el;
+            var pos = 0
+              , input = this.textarea.el;
 
             // IE Support
             if (document.selection) {
@@ -219,11 +232,10 @@ define([
                 var selLen = document.selection.createRange().text.length;
                 sel.moveStart('character', -input.value.length);
                 pos = sel.text.length - selLen;
-            }
 
-            // Firefox support
-            else if (input.selectionStart || input.selectionStart == '0')
+            } else if (input.selectionStart || input.selectionStart == '0') {
                 pos = input.selectionStart;
+            }
 
             return pos;
         },
@@ -241,6 +253,39 @@ define([
                 range.moveStart('character', index);
                 range.select();
             }
+        },
+
+        selectAll: function () {
+            var textarea = this.textarea;
+            textarea.select();
+
+            // Chrome support
+            textarea.mouseup(function() {
+                // Prevent further mouseup intervention
+                textarea.unbind("mouseup");
+                return false;
+            });
+        },
+
+        onCopy: function () {
+
+            this.textarea.focus();
+
+            if (!this.hasSelection()) {
+                this.selectAll();
+            }
+
+            return true;
+        },
+
+        hasSelection: function () {
+            var input = this.textarea.el;
+
+            return document.selection ? // IE support
+                   document.selection.getRange().text.length > 0 :
+
+                   // All other browsers
+                   input.selectionStart !== input.selectionEnd;
         },
 
         predictType: function (context) {

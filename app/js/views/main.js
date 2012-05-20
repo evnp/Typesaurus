@@ -2,14 +2,15 @@ define([
     'jquery',
     'underscore',
     'backbone',
+    'jqhotkeys',
 
     'text!templates/main.html',
     'views/editor',
     'views/controls',
     'views/word/definitions'
 
-], function($, _, Backbone, mainTemplate,
-            EditorView, ControlsView, DefinitionView){
+], function($, _, Backbone, jQueryHotkeys,
+            mainTemplate, EditorView, ControlsView, DefinitionView){
 
     var MainView = Backbone.View.extend({
 
@@ -18,8 +19,7 @@ define([
         render: function(){
             this.$el.html(mainTemplate);
 
-            var editor = (new EditorView).render();
-            (new ControlsView).render(editor);
+            (new ControlsView).render((new EditorView).render());
             (new DefinitionView).render();
         }
     });
