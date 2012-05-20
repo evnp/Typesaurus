@@ -76,7 +76,7 @@ define([
                 }
 
                 // If this is not the root list, select the first synonym
-                else { view.select($('ol li:first-child', list), 1, list); }
+                else { view.selectFirst(list); }
             }
 
             return list;
@@ -115,31 +115,41 @@ define([
               , level = Number(list.attr('id'));
 
             function selectPrev(e) {
-                var item = view.sel.item.prev();
+                var oldItem = view.sel.item;
 
-                if (item && item[0]) {
-                    view.select(item, item.index() + 1);
-                } else if (view.lists[level].position) {
-                    view.move(list, level, 'up');
-                    view.select($('ol li:first-child', list), 1, list);
+                if (oldItem) {
+                    var item = oldItem.prev();
 
-                // If this is the root list, go back to textarea.
-                } else if (level === 0) { returnToTextarea(); }
+                    if (item && item[0]) {
+                        view.select(item, item.index() + 1);
+                    } else if (view.lists[level].position) {
+                        view.move(list, level, 'up');
+                        view.selectFirst(list);
+
+                    // If this is the root list, go back to textarea.
+                    } else if (level === 0) { returnToTextarea(); }
+
+                } else { view.selectLast(list); }
 
                 return false;
             }
 
             function selectNext(e) {
-                var item = view.sel.item.next()
-                  , listData = view.lists[level];
+                var oldItem = view.sel.item;
 
-                if (item && item[0]) {
-                    view.select(item, item.index() + 1);
-                } else if (listData.position + 5 < listData.synonyms.length) {
-                    view.move(list, level, 'down');
-                    var newItem = $('ol li:last-child', list);
-                    view.select(newItem, newItem.index() + 1);
-                }
+                if (oldItem) {
+                    var item = oldItem.next()
+                      , listData = view.lists[level];
+
+                    if (item && item[0]) {
+                        view.select(item, item.index() + 1);
+                    } else if (listData.position + 5 < listData.synonyms.length) {
+                        view.move(list, level, 'down');
+                        view.selectLast(list);
+                    }
+
+                } else { view.selectFirst(list); }
+
                 return false;
             }
 
@@ -179,7 +189,7 @@ define([
                     if (prevItem && prevItem[0]) {
                         view.select(prevItem, prevItem.index() + 1, previous);
                     } else {
-                        view.select($('ol li:first-child', previous), 1, previous);
+                        view.selectFirst(previous);
                     }
                 }
 
@@ -210,8 +220,11 @@ define([
 
         onMouseHover: function (e, list) {
             var item = $(e.target);
+
             if (e.type === 'mouseenter') {
                 this.select(item, item.index() + 1, list);
+            } else {
+                this.deselect();
             }
         },
 
@@ -230,7 +243,20 @@ define([
         },
 
         deselect: function () {
-            if (this.sel.item) { this.sel.item.removeClass('selected'); }
+            if (this.sel.item) {
+                this.sel.item.removeClass('selected');
+            }
+            this.sel.item = null;
+            this.sel.rank = null;
+        },
+
+        selectFirst: function (list) {
+            this.select($('ol li:first-child', list), 1, list);
+        },
+
+        selectLast: function (list) {
+            var last = $('ol li:last-child', list);
+            this.select(last, last.index() + 1, list);
         },
 
         lookUp: function(item, rank, listData) {
@@ -241,7 +267,7 @@ define([
                                    listData.x + listData.width + 1,
                                    listData.y + ((rank - 1) * item.height()));
 
-            this.select($('ol li:first-child', list), 1, list);
+            this.selectFirst(list);
         },
 
         insert: function (item) {
@@ -268,7 +294,9 @@ define([
 
             // Store the full synonym list for
             // use by list movement functions.
-            this.lists[level].synonyms = synonyms;
+            if (this.lists[level]) {
+                this.lists[level].synonyms = synonyms;
+            }
 
             // Populate the list
             $('ol', list).html(_.template(synListTemplate, {
