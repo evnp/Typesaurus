@@ -45,7 +45,10 @@ define([
                 });
 
                 // Create Tab Connection
-                synList.css('border-left-style', 'none');
+                synList.css({
+                    'border-left-style': 'none',
+                    'left': '+=1px'
+                });
                 container.append( '<div ' // Create false right border
                   + 'id="falseBorder" '
                   + 'style="'
@@ -214,7 +217,7 @@ define([
                     (state === 'select' ? '#0189b0' :
                                           '#ffffff' ),
                 backgroundColor:
-                    (state === 'select' ? '#f0f7ff' :
+                    (state === 'select' ? '#ffffff' :
                     (state === 'hover'  ? '#2ea5c7' :
                                           '#0189b0' ))
             },{

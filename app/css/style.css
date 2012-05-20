@@ -13,6 +13,10 @@ input              { color: #0189B0; }
 .synonyms .selected {
     color: #ffffff;
     background-color: #FF4F00;
+
+   -moz-box-shadow:    -1px 1px 10px -4px #000;
+   -webkit-box-shadow: -1px 1px 10px -4px #000;
+    box-shadow:        -1px 1px 10px -4px #000;
 }
 
 ::-webkit-input-placeholder { color: #0189B0; }
@@ -59,8 +63,9 @@ input {
 }
 
 .synonyms {
-    background-color: #f0f7ff;
+    background-color: #ffffff;
     border: 1px solid #2D768E;
+    outline: none;
 }
 
 .synonyms .shadow {
@@ -76,16 +81,21 @@ input {
 }
 
 .synonyms ol {
-    margin: 4px;
-    padding: 0px;
+    margin: 6px 0 6px 0;
+    padding: 0;
 
     /* Remove decimal after ol numbering */
     counter-reset: item;
     list-style-type: none;
 }
 
+
+.synonyms ol li {
+    padding: 0 8px 0 8px;
+    display: block;
+}
+
 /* Remove decimal after ol numbering */
-.synonyms ol li { display: block; }
 .synonyms ol li:before {
     content: counter(item) "  ";
     counter-increment: item
@@ -109,7 +119,7 @@ input {
     position: relative;
     z-index: -3;
     border: 1px solid #2D768E;
-    border-right-color: #f0f7ff;
+    border-right-color: #ffffff;
     color: #ffffff;
     background-color: #0189b0;
     margin-top: -1px;
@@ -117,10 +127,6 @@ input {
     display: inline-block;
     float: left;
     clear: both;
-
-  /*-moz-box-shadow:    -1px 1px 20px -7px #000;
-  -webkit-box-shadow: -1px 1px 20px -7px #000;
-  box-shadow:         -1px 1px 20px -7px #000;*/
 }
 
 /* Code to allow auto-resizing of editor */

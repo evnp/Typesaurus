@@ -161,12 +161,14 @@ define([
         },
 
         insert: function (wordStr) {
-            var regex = new RegExp('((?:.*[\n]){' +
-                                    (this.synonyms.context.line - 1).toString() +
-                                   '}.{' + this.synonyms.context.start + '})' +
-                                    this.synonyms.context.wordStr +
-                                   '([\\s\\S]*)'),
-                match = this.textarea.val().match(regex);
+            var regex = new RegExp(
+                    '((?:.*[\n]){' +
+                    (this.synonyms.context.line - 1).toString() +
+                    '}.{' + this.synonyms.context.start + '})' +
+                     this.synonyms.context.wordStr +
+                    '([\\s\\S]*)'
+                )
+              , match = this.textarea.val().match(regex);
 
             if (match) {
                 var replacedText = match[1] + wordStr;
