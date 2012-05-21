@@ -40,12 +40,14 @@ define([
 
     var Word = Backbone.Model.extend({
 
-        thesaurus_url: 'http://localhost:8080/thesaurus',
+        thesaurus_url: document.URL + 'thesaurus',
 
         initialize: function(attributes){
             var word = this
               , wordIs = this.get('is')
               , url = this.thesaurus_url;
+
+            console.log(url);
 
             $.ajax(url + '?word=' + wordIs, {
                 success: function (response) {
