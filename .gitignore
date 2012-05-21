@@ -1,4 +1,4 @@
 *~
 *.swp
 node_modules
-api/thesaurus_api_key.txt
+api/config.json
