@@ -1,0 +1,16 @@
+{
+  "name": "typesaurus",
+  "subdomain": "typesaurus",
+  "scripts": {
+    "start": "server.js"
+  },
+  "version": "0.0.0-1",
+  "engines": {
+    "node": "0.6.x"
+  },
+  "dependencies": {
+    "node-static": "0.5.9",
+    "request": "2.9.202",
+    "mongojs": "0.4.3"
+  }
+}
