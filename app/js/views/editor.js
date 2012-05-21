@@ -175,6 +175,8 @@ define([
                 this.textarea.val(replacedText + match[2]);
                 this.setCaretPosition(replacedText.length);
             } else { this.textarea.focus(); }
+
+            this.incrementRank(wordStr);
         },
 
         getWordInfo: function (caretOffset) {
@@ -289,6 +291,17 @@ define([
                    // All other browsers
                    input.selectionStart !== input.selectionEnd;
         },
+
+
+/* -- Synonym Ranking -- */
+
+        incrementRank: function (wordStr) {
+            //var word = this.words.getFrom(wordStr);
+            console.log('Incrementing rank of wordStr.');
+        },
+
+
+/* -- Type Prediction -- */
 
         predictType: function (context) {
             return context.word.defaultType();
