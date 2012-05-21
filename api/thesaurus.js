@@ -1,19 +1,22 @@
-var url       = require('url'),
-    request   = require('request'),
-    thesaurus = require('mongojs').connect('thesaurus', ['words']),
-    apiKey    = getApiKey(require('fs'), 'api/thesaurus_api_key.txt');
+var url       = require('url')
+  , request   = require('request')
+  , config    = getConfiguration(require('fs'), 'api/config.json')
+  , apiKey    = config.thesaurus_api_key
+  , thesaurus = require('mongojs').connect(config.db_url, ['words']);
 
-function getApiKey(fs, path) {
+function getConfiguration(fs, path) {
     try {
-        return fs.readFileSync(path).toString().replace(/\s+/g, '');
-    } catch (e) {
+        var cfg = JSON.parse(fs.readFileSync(path).toString());
 
-        // Check to see whether the key is set as an environment variable
-        if (process.env.thesaurusApiKey) {
-            return process.env.thesaurusApiKey;
+        // Check whether the application is running in production
+        if (process.env.NODE_ENV !== 'production') {
+            cfg.db_url = 'thesaurus';
         }
 
-        console.error('There was an error opening the api key:');
+        return cfg;
+
+    } catch (e) {
+        console.error('There was an error getting configuration data:');
         console.log(e);
         process.exit(1);
     }
