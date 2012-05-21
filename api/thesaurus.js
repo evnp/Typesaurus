@@ -7,6 +7,12 @@ function getApiKey(fs, path) {
     try {
         return fs.readFileSync(path).toString().replace(/\s+/g, '');
     } catch (e) {
+
+        // Check to see whether the key is set as an environment variable
+        if (process.env.thesaurusApiKey) {
+            return process.env.thesaurusApiKey;
+        }
+
         console.error('There was an error opening the api key:');
         console.log(e);
         process.exit(1);
