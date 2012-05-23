@@ -196,8 +196,9 @@ input {
 /* Credits */
 
 #credits {
+    text-align: center;
     line-height: 24px;
-    margin-top: 24px;
+    margin-top: 100px;
     font-size: 16px;
     color: #629FB0;
 }
