@@ -13,17 +13,11 @@ define([
         el: '#definitions',
 
         initialize: function(){
-            this.words = wordCollection;
-            this.words.bind('add', this.addDefinition);
-        },
-
-        addDefinition: function(model, value){
-            // update list
         },
 
         render: function(){
             var data = {
-                definitions: this.words.models,
+                definitions: [],
                 _: _ // Underscore can be passed in so that
             };       // its functions are accessible on the template
 

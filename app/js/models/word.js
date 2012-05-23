@@ -47,8 +47,6 @@ define([
               , wordIs = this.get('is')
               , url = this.thesaurus_url;
 
-            console.log(url);
-
             $.ajax(url + '?word=' + wordIs, {
                 success: function (response) {
                     if (response && response.is === wordIs) {
