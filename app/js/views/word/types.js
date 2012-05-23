@@ -69,7 +69,10 @@ define([
 
             // Set up hover effect
             items.hover(function (e) {
-                var target = $(e.target)
+                var target = $(e.target);
+
+                // eliminate 'hint' arrows from hover
+                if (target.hasClass('hint')) { return; }
 
                 if (e.type === 'mouseenter') {
                     if (target.html() !== view.item.html()) {
@@ -172,7 +175,7 @@ define([
             item.animate({
                 'padding-right': 6 + (offset || 0),
                 'margin-right': synListWidth + (offset || 0),
-                'margin-left':   -(itemWidth + (offset || 0) +
+                'margin-left': 1 -(itemWidth + (offset || 0) +
                     Number($('.word-types', this.synList)
                         .css('left').replace(/[^-\d\.]/g, '')))
             },{
@@ -233,11 +236,15 @@ define([
         },
 
         addHintTo: function (item) {
-            return item.append('↕');
+            // vertical-align: middle on span prevents arrow from
+            // moving text down in Firefox/Safari
+            return item.append('<span class="hint"' +
+                               'style="display:inline;' +
+                               'vertical-align:middle">↕</span>');
         },
 
         removeHintFrom: function (item) {
-            item.html(item.html().replace(/\W/g, ''));
+            $('.hint', item).remove();
 
             // Prevents gap from appearing when hint is removed
             item.css('padding-right', 16);

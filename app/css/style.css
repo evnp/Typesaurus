@@ -119,8 +119,10 @@ input {
 .synonyms .word-types div {
     position: relative;
     z-index: -3;
+
+    height: 20px;
     border: 1px solid #2D768E;
-    border-right-color: #ffffff;
+    border-right: none;
     color: #ffffff;
     background-color: #0189b0;
     margin-top: -1px;
