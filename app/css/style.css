@@ -54,6 +54,7 @@ textarea {
     border: none;
     outline: none;
     background-color: #f0f7ff;
+    resize: none;
 }
 
 input {
