@@ -1,40 +1,42 @@
-<!--<div id="copy-paste-controls">
-    <legend>Copy/Paste Hotkeys: </legend>
+<div class="show-hide"></div>
+<div id="show-label">Show Controls</div>
+<div class="content">
+    <div id="hotkey-controls">
+        <span>Press</span>
+        <input type="text" name="hotkey" value="ctrl+shift+space"/>
+        <span>to see synonyms for the word under the cursor.</span>
+    </div>
+    <div id="auto-controls" style="display: none">
+        <span>Press space after a word and its synonyms will appear.</span>
+    </div>
+    <fieldset id="hotkey-auto-switch" class="switch blue">
+        <legend>Show synonyms via</legend>
 
-    <input id="copy-paste-on" name="view" type="radio" checked>
-    <label for="hotkey">ON</label>
+        <input id="hotkey" name="view" type="radio" checked>
+        <label for="hotkey">HOTKEY</label>
 
-    <input id="copy-paste-off" name="view" type="radio">
-    <label for="auto">OFF</label>
+        <input id="auto" name="view" type="radio">
+        <label for="auto">TYPING</label>
 
-    <span class="switch-button"></span>
-
-    <span>ctrl+v: paste into ↗&nbsp;&nbsp;&nbsp;&nbsp;</span>
-    <span>ctrl+c: copy all from ↗&nbsp;&nbsp;&nbsp;&nbsp;</span>
-</div>-->
-<div id="hotkey-controls">
-    <span>Press</span>
-    <input type="text" name="hotkey" value="ctrl+shift+space"/>
-    <span>to see synonyms for the word under the cursor.</span>
-</div>
-<div id="auto-controls" style="display: none">
-    <span>Press space after a word and its synonyms will appear.</span>
-</div>
-<fieldset id="hotkey-auto-switch" class="switch blue">
-    <legend>Show synonyms via</legend>
-
-    <input id="hotkey" name="view" type="radio" checked>
-    <label for="hotkey">HOTKEY</label>
-
-    <input id="auto" name="view" type="radio">
-    <label for="auto">TYPING</label>
-
-    <span class="switch-button"></span>
-</fieldset>
-<div id="instructions">
-    <p>up/down arrow keys | mouse - navigate synonym list</p>
-    <p>right arrow key | tab | click - show new synonym list for selected word</p>
-    <p>left arrow key | shift+tab - go back to previous list, or change word type</p>
-    <p>ctrl+c | command+c - select and copy all Typesaurus content</p>
+        <span class="switch-button"></span>
+    </fieldset>
+    <div id="instructions">
+        <div class="left">
+            <p>up/down arrow keys <span class="dark">|</span> mouse</p>
+            <p>right arrow key <span class="dark">|</span> tab <span class="dark">|</span> click</p>
+            <p>left arrow key <span class="dark">|</span> shift+tab</p>
+            <p>1 through 5</p>
+            <p>double-press 1 through 5</p>
+            <p>ctrl+c <span class="dark">|</span> command+c</p>
+        </div>
+        <div class="right">
+            <p> <span class="dark">-</span> navigate synonym list</p>
+            <p> <span class="dark">-</span> show new synonym list for selected word</p>
+            <p> <span class="dark">-</span> go back to previous list, or change word type</p>
+            <p> <span class="dark">-</span> select word at number in synonym list</p>
+            <p> <span class="dark">-</span> shortcut to replace word in editor with synonym</p>
+            <p> <span class="dark">-</span> select and copy all Typesaurus content</p>
+        </div>
+    </div>
 </div>
 
