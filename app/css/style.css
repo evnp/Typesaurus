@@ -9,6 +9,7 @@ input              { color: #0189B0; }
 .synonyms          { color: #0189B0; }
 #definitions       { display: none; color: #FFA200; }
 #definitions.text  { color: #FF4F00; }
+.dark              { color: #00607B; }
 
 .synonyms .selected {
     color: #ffffff;
@@ -167,6 +168,28 @@ input {
     height: 95px;
 }
 
+#controls .show-hide {
+    background-image: url('../images/arrow.png');
+    width: 11px;
+    height: 11px;
+    position: absolute;
+    top: 27px;
+    left: -24px;
+
+    text-indent: 0px;
+}
+
+#show-label {
+    position: absolute;
+    top: 22px;
+    left: 4px;
+    display: none;
+}
+
+#controls .content {
+    display: inline;
+}
+
 #auto-controls {
     position: absolute;
     top: 0;
@@ -190,6 +213,7 @@ input {
 /* Instructions */
 
 #instructions {
+    color: #629FB0;
     position: absolute;
     top: 112px;
     left: 0px;
@@ -199,12 +223,22 @@ input {
     margin: 10px 0;
 }
 
+#instructions .left {
+    float: left;
+    text-align: right;
+    margin-right: 10px;
+}
+
+#instructions .right {
+    float: right;
+}
+
 /* Credits */
 
 #credits {
     text-align: center;
     line-height: 24px;
-    margin-top: 200px;
+    margin-top: 270px;
     font-size: 16px;
     color: #629FB0;
 }
