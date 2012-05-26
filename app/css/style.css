@@ -9,7 +9,11 @@ input              { color: #0189B0; }
 .synonyms          { color: #0189B0; }
 #definitions       { display: none; color: #FFA200; }
 #definitions.text  { color: #FF4F00; }
-.dark              { color: #00607B; }
+
+.dark {
+    color: #00495e;
+    font-weight: bold;
+}
 
 .synonyms .selected {
     color: #ffffff;
@@ -24,7 +28,7 @@ input              { color: #0189B0; }
 :-moz-placeholder           { color: #0189B0; }
 
 /* Font */
-body { font-family: Inconsolata; }
+body { font-family: "futura-pt"; }
 #title { font-weight: bold; font-size: 48px; }
 #content, input { font-size: 20px; }
 textarea, #text-copy,
@@ -168,6 +172,7 @@ input {
 #controls {
     position: relative;
     height: 95px;
+    margin-top: 32px;
 }
 
 #controls .show-hide {
@@ -175,7 +180,7 @@ input {
     width: 11px;
     height: 11px;
     position: absolute;
-    top: 27px;
+    top: 9px;
     left: -24px;
 
     text-indent: 0px;
@@ -183,7 +188,7 @@ input {
 
 #show-label {
     position: absolute;
-    top: 22px;
+    top: 0px;
     left: 4px;
     display: none;
 }
@@ -197,7 +202,7 @@ input {
     top: 0;
     left: 0;
 
-    padding-top: 22px;
+    padding-top: 0px;
 }
 
 #hotkey-controls {
@@ -205,13 +210,17 @@ input {
     top: 0;
     left: 0;
 
-    padding-top: 22px;
+    padding-top: 0px;
 }
 
 #hotkey-auto-switch {
     position: absolute;
-    top: 65px;
-    left: 0;
+    top: 43px;
+    left: -33px;
+}
+
+#hotkey-auto-switch legend {
+    text-align: right;
 }
 
 /* Instructions */
@@ -219,7 +228,7 @@ input {
 #instructions {
     color: #629FB0;
     position: absolute;
-    top: 112px;
+    top: 90px;
     left: 0px;
 }
 
