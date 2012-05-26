@@ -63,10 +63,12 @@ define([
             });
 
             function autoSize() {
-                // Copy textarea contents; browser will calculate correct height of copy,
-                // which will make overall container taller, which will make textarea taller.
-                var text = textarea.val().replace(/\n/g, '<br/>');
-                $("#text-copy").html(text);
+                if (textarea.val()) {
+                    // Copy textarea contents; browser will calculate correct height of copy,
+                    // which will make overall container taller, which will make textarea taller.
+                    var text = textarea.val().replace(/\n/g, '<br/>');
+                    $("#text-copy").html(text);
+                }
             }
         },
 
