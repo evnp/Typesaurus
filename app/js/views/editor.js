@@ -129,12 +129,13 @@ define([
             var editor = this;
 
             this.mode = this.mode === 'hotkey' ? 'auto' : 'hotkey';
-            this.hotkey = this.hotkey || 'ctrl+shift+space';
+            this.hotkey = this.hotkey || 'shift+space';
 
             if (this.mode === 'hotkey') {
                 this.textarea.keydown('space', function () { editor.synonyms.clear(); });
                 this.textarea.keydown(this.hotkey, function () {
                     editor.summonList(editor.getWordInfo());
+                    return false;
                 });
             } else if (this.mode === 'auto') {
                 this.textarea.keydown('space', function () {
