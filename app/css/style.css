@@ -24,10 +24,12 @@ input              { color: #0189B0; }
 :-moz-placeholder           { color: #0189B0; }
 
 /* Font */
-#title            { font: bold 48px Inconsolata; }
-#content, input        { font: 20px Inconsolata; }
+body { font-family: Inconsolata; }
+#title { font-weight: bold; font-size: 48px; }
+#content, input { font-size: 20px; }
 textarea, #text-copy,
-    #synonyms, #header { font: 24px Inconsolata; }
+#synonyms, #header { font-family: inherit; font-size: 24px; }
+
 
 body {
     background-color: #f0f7ff;
