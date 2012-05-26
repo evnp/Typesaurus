@@ -114,15 +114,14 @@ define([
         },
 
         setupCopyPaste: function () {
-            var editor = this
-              , onCopy = function () { editor.onCopy(); };
+            var editor   = this
+              , modifier = this.isOSX ? 'meta' : 'ctrl'
+              , onCopy   = function () { editor.onCopy(); }
+              , onPaste  = function () { editor.textarea.focus(); return true; };
 
-            this.textarea.keydown('ctrl+c', onCopy);
-            $(document).keydown(  'ctrl+c', onCopy);
-            $(document).keydown(  'ctrl+v', function () {
-                editor.textarea.focus();
-                return true;
-            });
+            this.textarea.keydown(modifier + '+c', onCopy);
+            $(document).keydown(  modifier + '+c', onCopy);
+            $(document).keydown(  modifier + '+v', onPaste);
         },
 
         switchMode: function () {
@@ -318,6 +317,10 @@ define([
 
         getTextWidth: function (text) {
             return this.$('#line-copy').html(text).width();
+        },
+
+        isOSX: function () {
+            return /Mac/.test(navigator.userAgent);
         }
     });
 
