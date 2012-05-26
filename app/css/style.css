@@ -9,6 +9,7 @@ input              { color: #0189B0; }
 .synonyms          { color: #0189B0; }
 #definitions       { display: none; color: #FFA200; }
 #definitions.text  { color: #FF4F00; }
+#instructions      { color: #629FB0; }
 
 .dark {
     color: #00495e;
@@ -28,11 +29,13 @@ input              { color: #0189B0; }
 :-moz-placeholder           { color: #0189B0; }
 
 /* Font */
-body { font-family: "futura-pt"; }
-#title { font-weight: bold; font-size: 48px; }
-#content, input { font-size: 20px; }
-textarea, #text-copy, #line-copy,
-#synonyms, #header { font-family: inherit; font-size: 24px; }
+body {      font-family: "futura-pt"; }
+textarea, #text-copy, #line-copy, #header { font-family: inherit;
+            font-size: 1.6em; }
+#title    { font-size: 2.5em; }
+#controls, .synonyms {
+            font-size: 1.3em; }
+#credits  { font-size: 1.0em; }
 
 
 body {
@@ -134,7 +137,7 @@ input {
     color: #ffffff;
     background-color: #0189b0;
     margin-top: -1px;
-    padding: 2px 6px 4px 6px;
+    padding: 1px 6px 5px 6px;
     display: inline-block;
     float: left;
     clear: both;
@@ -177,7 +180,7 @@ input {
 #controls {
     position: relative;
     height: 95px;
-    margin-top: 6px;
+    margin-top: 15px;
 }
 
 #controls .show-hide {
@@ -221,7 +224,7 @@ input {
 #hotkey-auto-switch {
     position: absolute;
     top: 43px;
-    left: -33px;
+    left: -22px;
 }
 
 #hotkey-auto-switch legend {
@@ -231,7 +234,6 @@ input {
 /* Instructions */
 
 #instructions {
-    color: #629FB0;
     position: absolute;
     top: 90px;
     left: 0px;
@@ -244,7 +246,7 @@ input {
 #instructions .left {
     float: left;
     text-align: right;
-    margin-right: 10px;
+    padding-right: 10px;
 }
 
 #instructions .right {
@@ -257,7 +259,6 @@ input {
     text-align: center;
     line-height: 24px;
     margin-top: 270px;
-    font-size: 16px;
     color: #629FB0;
 }
 
