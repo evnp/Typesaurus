@@ -17,9 +17,7 @@ define([
 
         initialize: function () {
             this.words = new WordCollection;
-
-            this.charWidth  = 12;
-            this.lineHeight = 24;
+            this.lineHeight = 31;
         },
 
         render: function () {
@@ -149,10 +147,7 @@ define([
         summonList: function (wordInfo) {
             if (wordInfo) {
                 var editor = this
-                  , word = editor.words.getFrom(wordInfo.word)
-                  ,    x = wordInfo.start * this.charWidth
-                  ,    y = (wordInfo.line * this.lineHeight) + 10;
-
+                  , word = editor.words.getFrom(wordInfo.word);
 
                 // Get the synonym view ready for a new list tree
                 editor.synonyms.clear();
@@ -160,7 +155,7 @@ define([
                 editor.synonyms.context.wordStr = editor.synonyms.context.word;
                 editor.synonyms.context.word = word;
 
-                editor.synonyms.render(word, 0, x, y);
+                editor.synonyms.render(word, 0, wordInfo.x, wordInfo.y);
             }
         },
 
@@ -189,7 +184,7 @@ define([
             var lineInfo = this.getLineInfo(),
                 text = lineInfo.text,
                 start = end = lineInfo.caretPos + caretOffset,
-                wordChars  = /[a-zA-Z'-]/;
+                wordChars = /[a-zA-Z'-]/;
 
             // Get the start and end boundries of the word
             while (text[start - 1] &&
@@ -199,9 +194,14 @@ define([
                    wordChars.test(text[end])) { end++; }
 
             return start === end ? null : {
-                start: start,
-                line:  lineInfo.lineNo,
-                word:  text.substring(start, end)
+
+                // The coordinates of the word in the editor
+                // y coordinate is the width of text before the word
+                x: this.getTextWidth(text.slice(0, start)),
+                y: (lineInfo.lineNo * this.lineHeight) + 4,
+
+                // The word as a string
+                word: text.substring(start, end)
             };
         },
 
@@ -229,6 +229,7 @@ define([
             };
         },
 
+        // Gets the editor caret position by line and character
         getCaretPosition: function () {
             var pos = 0
               , input = this.textarea.el;
@@ -248,6 +249,7 @@ define([
             return pos;
         },
 
+        // Sets the editor caret position by line and character
         setCaretPosition: function (index) {
             this.textarea.focus();
             var el = this.textarea.el;
@@ -286,16 +288,6 @@ define([
             return true;
         },
 
-        hasSelection: function () {
-            var input = this.textarea.el;
-
-            return document.selection ? // IE support
-                   document.selection.getRange().text.length > 0 :
-
-                   // All other browsers
-                   input.selectionStart !== input.selectionEnd;
-        },
-
 
 /* -- Synonym Ranking -- */
 
@@ -309,6 +301,23 @@ define([
 
         predictType: function (context) {
             return context.word.defaultType();
+        },
+
+
+/* -- Utility -- */
+
+        hasSelection: function () {
+            var input = this.textarea.el;
+
+            return document.selection ? // IE support
+                   document.selection.getRange().text.length > 0 :
+
+                   // All other browsers
+                   input.selectionStart !== input.selectionEnd;
+        },
+
+        getTextWidth: function (text) {
+            return this.$('#line-copy').html(text).width();
         }
     });
 
