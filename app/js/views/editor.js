@@ -180,10 +180,11 @@ define([
         getWordInfo: function (caretOffset) {
             caretOffset = caretOffset || 0;
 
-            var lineInfo = this.getLineInfo(),
-                text = lineInfo.text,
-                start = end = lineInfo.caretPos + caretOffset,
-                wordChars = /[a-zA-Z'-]/;
+            var lineInfo = this.getLineInfo()
+              , line = lineInfo.lineNo
+              , text = lineInfo.text
+              , start = end = lineInfo.caretPos + caretOffset
+              , wordChars = /[a-zA-Z'-]/;
 
             // Get the start and end boundries of the word
             while (text[start - 1] &&
@@ -193,11 +194,13 @@ define([
                    wordChars.test(text[end])) { end++; }
 
             return start === end ? null : {
+                line: line,
+                start: start,
 
                 // The coordinates of the word in the editor
                 // y coordinate is the width of text before the word
                 x: this.getTextWidth(text.slice(0, start)),
-                y: (lineInfo.lineNo * this.lineHeight) + 4,
+                y: (line * this.lineHeight) + 4,
 
                 // The word as a string
                 word: text.substring(start, end)
