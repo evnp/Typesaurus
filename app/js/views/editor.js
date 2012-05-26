@@ -151,7 +151,8 @@ define([
                 var editor = this
                   , word = editor.words.getFrom(wordInfo.word)
                   ,    x = wordInfo.start * this.charWidth
-                  ,    y = wordInfo.line * this.lineHeight;
+                  ,    y = (wordInfo.line * this.lineHeight) + 10;
+
 
                 // Get the synonym view ready for a new list tree
                 editor.synonyms.clear();

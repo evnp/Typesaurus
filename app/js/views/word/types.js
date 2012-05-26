@@ -21,7 +21,7 @@ define([
 
             var container = $('.word-types', synList)
               , items = $('.word-types div', synList)
-              , typeListWidth = 54
+              , typeListWidth = 40
               , startingType = $('.word-types .' + synView.type, synList)
               , view = this;
 
@@ -240,7 +240,7 @@ define([
             // moving text down in Firefox/Safari
             return item.append('<span class="hint"' +
                                'style="display:inline;' +
-                               'vertical-align:middle">↕</span>');
+                               'vertical-align:top">&nbsp;↕&nbsp;</span>');
         },
 
         removeHintFrom: function (item) {
