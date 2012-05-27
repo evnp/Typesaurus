@@ -95,33 +95,57 @@ function accessApi(word, response) {
 }
 
 function handleWordUpdate(request, response) {
-    var words       = processRequest(request),
-        original    = words.original,
-        replacement = words.replacement;
+    var words = processRequest(request);
 
     if (words) { // Only respond to a correctly formed query string
-        thesaurus.words.findOne({ word: original }, function(error, result) {
-            var synonyms = result.synonyms,
-                ratings  = result.ratings,
-                synIndex = synonyms.indexOf(replacement);
+        var source  = words.original
+          , synonym = words.replacement
+          , type    = words.type;
 
-            if (synIndex > 0) {
-                ratings[synIndex]++;
-            } else {
-                // Add the new word and a rating for it
-                synonyms.push(replacement);
-                ratings.push(1);
+        var synonymQuery = { // Finds synonym on word (if synonym is string)
+                is: source
+            },
+
+            // Replaces synonym string with a synonym object
+            // $ operator is used to reference found synonym index
+            // $inc operator increments present value
+            synonymRank = { $pull: {}, $push: {} };
+        synonymRank.$pull[ type ] = synonym;
+        synonymRank.$push[ type ] = { is: synonym, rank: 1 };
+
+        // Update word with modified synonym+rating sets
+        thesaurus.words.update(
+            synonymQuery,
+            synonymRank,
+            function(error, updated) {
+                if( err || !updated ) {
+                    console.error('Word not updated.');
+                    console.log(err);
+                }
             }
+        );
 
-            // Update word with modified synonym+rating sets
-            thesaurus.words.update({ word: original }, { $set: {
-                synonyms: synonyms,
-                ratings: ratings
-            }}, function(error, updated) {
-                if( err || !updated ) console.log("User not updated");
-                else console.log('"' + updated.word + '" updated.');
-            });
-        });
+        // Finds synonym on word (if synonym is object
+        var synonymQuery = { is: source };
+        synonymQuery[ type + '.is'] = synonym;
+
+        // Increments found synonym's rank.
+        // $ operator is used to reference found synonym index
+        // $inc operator increments present value
+        var synonymRankInc = { $inc: {} };
+        synonymRankInc.$inc[ type + '.$rank' ] = 1;
+
+        // Update word with modified synonym+rating sets
+        thesaurus.words.update(
+            synonymQuery,
+            synonymRankInc,
+            function(error, updated) {
+                if( err || !updated ) {
+                    console.error('Word not updated.');
+                    console.log(err);
+                }
+            }
+        );
     }
 }
 
@@ -130,17 +154,18 @@ function processRequest(request) {
         type = request.method;
 
     if ('query' in data && data.query && (type === 'GET' || type === 'POST')) {
-        return type === 'GET' ? processGet(data) : processPost(data);
+        return type === 'GET' ? validateGet(data) : validatePost(data);
     }
 
-    function processGet(data) {
+    function validateGet(data) {
         return ('word' in data.query) ? data.query.word : null;
     }
 
-    function processPost(data) {
-        console.log(data);
-        return ('original' in data.query && 'replacement' in data.query) ?
-            data.query : null;
+    function validatePost(data) {
+        return ('original' in data.query &&
+             'replacement' in data.query &&
+                    'type' in data.query) ?
+                              data.query  : null;
     }
 }
 

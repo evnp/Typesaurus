@@ -175,7 +175,7 @@ define([
             } else { this.textarea.focus(); }
 
             // Update rankings appropriately for the replace operation
-            editor.synonyms.context.word.rankForReplace(wordStr, type)
+            this.synonyms.context.word.handleReplace(wordStr, type)
         },
 
         getWordInfo: function (caretOffset) {

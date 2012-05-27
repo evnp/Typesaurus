@@ -50,6 +50,8 @@ define([
               , wordIs = this.get('is');
 
             $.ajax(this.thesaurus_url + '?word=' + wordIs, {
+
+                type: 'GET',
                 success: function (response) {
                     if (response && response.is === wordIs) {
                         word.set(response);
@@ -68,7 +70,7 @@ define([
         setTypes: function () {
             var keys = [];
             for (var k in this.attributes) { keys.push(k); }
-            this.set('types', _.difference(keys, ['is', '_id']));
+            this.set('types', _.difference(keys, ['is', 'rank', '_id']));
         },
 
         getPluralizedTypes: function () {
@@ -112,19 +114,20 @@ define([
 
 /* -- Synonym Ranking -- */
 
-        rankForReplace: function (wordStr, type) {
+        handleReplace: function (wordStr, type) {
             var word =   this
               , wordIs = this.get('is');
 
-            console.log(type);
-
             $.ajax(this.thesaurus_url +
                          '?original=' + wordIs +
-                      '&replacement=' + wordStr, {
+                      '&replacement=' + wordStr +
+                             '&type=' + type, {
+
+                type: 'POST',
                 success: function (response) {
-                    if (response) {
-                        word.incRankFor(wordStr, type);
-                    }
+                    console.log('response:');
+                    console.log(response);
+                    if (response) { word.incRankFor(wordStr, type); }
                 },
                 error: function (request, stat, err) { console.log(err); },
             });
