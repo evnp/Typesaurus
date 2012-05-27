@@ -95,7 +95,9 @@ function accessApi(word, response) {
 }
 
 function handleWordUpdate(request, response) {
-    var words = processRequest(request);
+    console.log('Handling update.');
+
+    /*var words = processRequest(request);
 
     if (words) { // Only respond to a correctly formed query string
         var source  = words.original
@@ -146,7 +148,7 @@ function handleWordUpdate(request, response) {
                 }
             }
         );
-    }
+    }*/
 }
 
 function processRequest(request) {
