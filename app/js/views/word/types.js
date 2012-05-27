@@ -238,7 +238,7 @@ define([
         addHintTo: function (item) {
             // vertical-align: middle on span prevents arrow from
             // moving text down in Firefox/Safari
-            return item.append('<span class="hint"' +
+            return item.append('<span class="hint dark"' +
                                'style="display:inline;' +
                                'vertical-align:top">&nbsp;↕&nbsp;</span>');
         },
