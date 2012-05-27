@@ -247,7 +247,7 @@ define([
             $('.hint', item).remove();
 
             // Prevents gap from appearing when hint is removed
-            item.css('padding-right', 16);
+            item.css('padding-right', 30);
         },
 
         hasHint: function (item) {
