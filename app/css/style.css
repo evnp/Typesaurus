@@ -12,7 +12,7 @@ input              { color: #0189B0; }
 #instructions      { color: #629FB0; }
 
 .dark { color: #00495e; }
-.bold { font-weight: bold; }
+.bold { font-weight: 500; }
 
 .synonyms .selected {
     color: #ffffff;
@@ -27,8 +27,10 @@ input              { color: #0189B0; }
 :-moz-placeholder           { color: #0189B0; }
 
 /* Font */
-body {      font-family: "futura-pt"; }
-textarea, #text-copy, #line-copy, #header { font-family: inherit;
+body { font-family: "futura-pt"; font-weight: 300; }
+textarea, #text-copy, #line-copy, #header {
+            font-family: inherit;
+            font-weight: inherit;
             font-size: 1.6em; }
 #title    { font-size: 2.5em; }
 #controls, .synonyms {

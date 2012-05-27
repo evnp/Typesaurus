@@ -130,8 +130,8 @@ define([
             });
         },
 
-        incRank: function () { this.updateRank(1);  }
-        decRank: function () { this.updateRank(-1); }
+        incRank: function () { this.updateRank(1);  },
+        decRank: function () { this.updateRank(-1); },
 
         updateRank: function (amount) {
             this.set('rank', this.get('rank') + amount);
