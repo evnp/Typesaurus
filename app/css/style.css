@@ -11,10 +11,8 @@ input              { color: #0189B0; }
 #definitions.text  { color: #FF4F00; }
 #instructions      { color: #629FB0; }
 
-.dark {
-    color: #00495e;
-    font-weight: bold;
-}
+.dark { color: #00495e; }
+.bold { font-weight: bold; }
 
 .synonyms .selected {
     color: #ffffff;
