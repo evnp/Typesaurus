@@ -13,19 +13,21 @@ http.createServer(function (request, response) {
             if (request.method === 'GET') {
 
                 // GET
-                // Url form accepted: /thesaurus?word=abc
-                // Sends a JSON response containing the word and their synonyms.
+                // Url syntax accepted: /thesaurus?word=abc
+                // Sends a JSON response containing the word and its synonyms.
                 api.handleWordQuery(request, response);
 
             } else if (request.method === 'POST') {
 
                 // POST
-                // Url form accepted: /thesaurus/update?original=abc&replacement=efg
+                // Url syntax accepted: /thesaurus?original=abc&replacement=efg
+                //                      /thesaurus?inc_syn=abc&on=efg
+                //                      /thesaurus?dec_syn=abc&on=efg
                 // Sends a response confirming the update
                 api.handleWordUpdate(request, response);
             }
 
-        } else { // Serve static file for the frontend app
+        } else { // Serve static files for the frontend app
             site.serve(request, response);
         }
     });

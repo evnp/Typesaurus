@@ -167,7 +167,8 @@ define([
             }
 
             function insertSelected() {
-                view.insert(view.sel.item);
+                view.editor.insert(view.getWordStr(view.sel.item), view.type);
+                view.clear();
                 return false;
             }
 
@@ -268,11 +269,6 @@ define([
                                    listData.y + ((rank - 1) * item.height()));
 
             this.selectFirst(list);
-        },
-
-        insert: function (item) {
-            this.clear();
-            this.editor.insert(this.getWordStr(item));
         },
 
 

@@ -164,7 +164,7 @@ define([
             }
         },
 
-        insert: function (wordStr) {
+        insert: function (wordStr, type) {
             var regex = new RegExp(
                     '((?:.*[\n]){' +
                     (this.synonyms.context.line - 1).toString() +
@@ -180,7 +180,8 @@ define([
                 this.setCaretPosition(replacedText.length);
             } else { this.textarea.focus(); }
 
-            this.incrementRank(wordStr);
+            // Update rankings appropriately for the replace operation
+            editor.synonyms.context.word.rankForReplace(wordStr, type)
         },
 
         getWordInfo: function (caretOffset) {
@@ -294,14 +295,6 @@ define([
 
                    // All other browsers
                    input.selectionStart !== input.selectionEnd;
-        },
-
-
-/* -- Synonym Ranking -- */
-
-        incrementRank: function (wordStr) {
-            //var word = this.words.getFrom(wordStr);
-            console.log('Incrementing rank of wordStr.');
         },
 
 

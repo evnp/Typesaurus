@@ -65,8 +65,9 @@ function accessApi(word, response) {
             if (!error && headers.statusCode == 200) {
                 try {
                     // Create a new word object
-                    var wordObject = JSON.parse(body);
-                    wordObject.is  = word;
+                    var wordObject  = JSON.parse(body);
+                    wordObject.is   = word;
+                    wordObject.rank = 0;
 
                     // Send the word to the application
                     response.writeHead(200, {'Content-type': 'text/json'});
@@ -137,6 +138,7 @@ function processRequest(request) {
     }
 
     function processPost(data) {
+        console.log(data);
         return ('original' in data.query && 'replacement' in data.query) ?
             data.query : null;
     }
