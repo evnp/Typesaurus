@@ -9,7 +9,7 @@ define([
     Word Object Structure:
     {
         is: 'word',
-        rank: X <integer>,
+        rank: <number>,
         types: [
             'noun',
             'verb',
@@ -17,18 +17,17 @@ define([
         ],
         noun: {
             syn: [
-                'word',
-                'word',
+                 { is: 'word' },
+                 { is: 'word' },
                  {
                     is: 'word',
                     rank: <number>
                 },
-                'word',
                 ...
             ],
             rel: [
-                'word',
-                'word',
+                 { is: 'word' },
+                 { is: 'word' },
                 ...
             ]
         },
@@ -55,7 +54,6 @@ define([
                 success: function (response) {
                     if (response && response.is === wordIs) {
                         word.set(response);
-                        word.setTypes();
                     } else {
                         word.addToThesaurus();
                     }
@@ -66,12 +64,6 @@ define([
 
 
 /* -- Word Type Management -- */
-
-        setTypes: function () {
-            var keys = [];
-            for (var k in this.attributes) { keys.push(k); }
-            this.set('types', _.difference(keys, ['is', 'rank', '_id']));
-        },
 
         getPluralizedTypes: function () {
             return _.map(this.get('types'), function (word) {
@@ -89,26 +81,25 @@ define([
         // in list selected via wordType + listType
         getSynonym: function(wordType, listType, index) {
             var word = this.getSynonymList(wordType, listType)[index];
-            return word ? (word.is || word) : null;
+            return word ? word.is : null;
         },
 
         // Gets multiple linked words from list selected via wordtype + listType
         // Accepts to/from parameters, just to, or neither.
+        // Always gets highest ranked words first, and sorts them by rank.
         getSynonyms: function(wordType, listType, to, from) {
-            var list  = this.getSynonymList(wordType, listType),
-                words = list.slice(from || 0, to || list.length);
+            var list   = this.getSynonymList(wordType, listType)
+              , sorted = _.sortBy(list, function (syn) { return syn.rank || 0; })
+              , words  = sorted.slice(from || 0, to || sorted.length);
 
-            for (var i = 0; i < words.length; i++) {
-                if (words[i].is) { words[i] = words[i].is; }
-            }
-            return words;
+            return _.pluck(words, 'is');
         },
 
         // Returns a complete synonym or related word list based on
         // wordType ('noun', 'verb', ...) and listType ('synonyms', 'related')
         getSynonymList: function (wordType, listType) {
-            wordType = this.get(wordType);
-            return (wordType ? wordType[listType] : null) || []; 
+            list = this.get(wordType);
+            return (list ? list[listType] : null) || [];
         },
 
 

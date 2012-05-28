@@ -64,10 +64,7 @@ function accessApi(word, response) {
         request(url, function (error, headers, body) {
             if (!error && headers.statusCode == 200) {
                 try {
-                    // Create a new word object
-                    var wordObject  = JSON.parse(body);
-                    wordObject.is   = word;
-                    wordObject.rank = 0;
+                    var wordObject = processWordData(JSON.parse(body), word);
 
                     // Send the word to the application
                     response.writeHead(200, {'Content-type': 'text/json'});
@@ -91,6 +88,36 @@ function accessApi(word, response) {
                 console.log(headers);
             }
         });
+    }
+
+    function processWordData (word, wordStr) {
+        word.is = wordStr;
+        word.rank = 0;
+
+        var types = [], strings, objects;
+
+        for (var wordType in word) {
+
+            if (wordType !== 'is' && wordType !== 'rank') {
+
+                for (var listType in word[ wordType ]) {
+                    strings = word[ wordType ][ listType ];
+                    objects = [];
+
+                    // Convert string representations of synonyms into dicts
+                    if (strings && strings.length) {
+                        for (var i = 0; i < strings.length; i++)
+                            objects.push({ is: strings[i] });
+                        word[ wordType ][ listType ] = objects;
+                    }
+                }
+
+                types.push(wordType);
+            }
+        }
+
+        word.types = types;
+        return word;
     }
 }
 
