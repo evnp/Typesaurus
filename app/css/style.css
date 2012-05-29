@@ -1,33 +1,129 @@
-/* Color Scheme */
+/* --- Color Scheme --- */
 /* http://colorschemedesigner.com/#3o31IP.--smIg */
+
+/* - Blue - */
+/*
+body { background-color: #f0f7ff; }
 
 #title             { color: #FF4F00; }
 #header            { color: #0189B0; }
-#text-area         { color: #0189B0; }
-#controls          { color: #0189B0; }
-input              { color: #0189B0; }
-.synonyms          { color: #0189B0; }
-#definitions       { display: none; color: #FFA200; }
-#definitions.text  { color: #FF4F00; }
-#instructions      { color: #629FB0; }
 
-.dark { color: #00495e; }
-.bold { font-weight: 500; }
+#text-area         { color: #0189B0;
+          background-color: #f0f7ff; }
+
+#controls          { color: #0189B0; }
+
+#controls .show-hide{
+    background-image: url('../images/arrow-blue.png');
+}
+
+.switch.blue input:checked + label {
+                     color: #15475d; }
+
+.switch.blue .switch-button {
+          background-color: #38a3d4;}
+
+input              { color: #0189B0;
+          background-color: #f0f7ff;
+          border: 1px solid #2D768E;}
+
+.synonyms          { color: #0189B0;
+          background-color: white;
+          border: 1px solid #2D768E; }
 
 .synonyms .selected {
-    color: #ffffff;
-    background-color: #FF4F00;
+                     color: white;
+          background-color: #ff4f00; }
 
-   -moz-box-shadow:    -1px 1px 10px -4px #000;
-   -webkit-box-shadow: -1px 1px 10px -4px #000;
-    box-shadow:        -1px 1px 10px -4px #000;
-}
+.synonyms .word-types div {
+                     color: #ffffff;
+          border: 1px solid #2D768E;
+          background-color: #0189b0; }
+
+#instructions      { color: #629FB0; }
+
+#definitions       { display: none;
+                     color: #FFA200; }
+
+#definitions.text  { color: #FF4F00; }
+
+#credits           { color: #629FB0; }
+
 
 ::-webkit-input-placeholder { color: #0189B0; }
 :-moz-placeholder           { color: #0189B0; }
 
-/* Font */
+.dark { color: #00495e; }
+.bold { font-weight: 500; }
+*/
+
+
+/* - White - */
+
+body {    background-color: white; }
+a                  { color: red; }
+
+#title             { color: red; }
+#header            { color: black; }
+
+#text-area         { color: black;
+          background-color: white; }
+
+#controls          { color: gray; }
+
+#controls .show-hide{
+    background-image: url('../images/arrow-gray.png');
+}
+
+.switch.blue input:checked + label {
+                     color: red; }
+
+.switch.blue .switch-button {
+          background-color: white;}
+
+input              { color: black;
+          background-color: white;
+          border: 1px solid red;}
+
+.synonyms          { color: red;
+          background-color: white;
+          border: 1px solid black; }
+
+.synonyms .selected {
+                     color: white;
+          background-color: red; }
+
+.synonyms .word-types div {
+                     color: black;
+          border: 1px solid black;
+          background-color: white; }
+
+#instructions      { color: gray; }
+
+#definitions     { display: none;
+                     color: red; }
+
+#definitions.text  { color: black; }
+
+#credits           { color: gray; }
+
+
+::-webkit-input-placeholder {
+                     color: black; }
+:-moz-placeholder  { color: black; }
+
+.dark { color: black; }
+
+
+
+
+
+
+
+/* --- Font --- */
+
 body { font-family: "futura-pt"; font-weight: 300; }
+a { text-decoration: none; }
 textarea, #text-copy, #line-copy, #header {
             font-family: inherit;
             font-weight: inherit;
@@ -37,11 +133,13 @@ textarea, #text-copy, #line-copy, #header {
             font-size: 1.3em; }
 #credits  { font-size: 1.0em; }
 
+.bold { font-weight: 500; }
 
-body {
-    background-color: #f0f7ff;
-    height: 100%;
-}
+
+
+
+
+body { height: 100%; }
 
 #content {
     margin-top: 200px;
@@ -63,20 +161,15 @@ body {
 textarea {
     border: none;
     outline: none;
-    background-color: #f0f7ff;
     resize: none;
 }
 
 input {
     margin-top: 20px;
-    background-color: #f0f7ff;
     outline: none;
-    border: 1px solid #2D768E;
 }
 
 .synonyms {
-    background-color: #ffffff;
-    border: 1px solid #2D768E;
     outline: none;
 }
 
@@ -90,6 +183,12 @@ input {
    -moz-box-shadow:    -1px 1px 20px -7px #000;
    -webkit-box-shadow: -1px 1px 20px -7px #000;
     box-shadow:        -1px 1px 20px -7px #000;
+}
+
+.synonyms .selected {
+   -moz-box-shadow:    -1px 1px 10px -4px #000;
+   -webkit-box-shadow: -1px 1px 10px -4px #000;
+    box-shadow:        -1px 1px 10px -4px #000;
 }
 
 .synonyms ol {
@@ -132,10 +231,7 @@ input {
     z-index: -3;
 
     height: 27px;
-    border: 1px solid #2D768E;
     border-right: none;
-    color: #ffffff;
-    background-color: #0189b0;
     margin-top: -1px;
     padding: 1px 6px 5px 6px;
     display: inline-block;
@@ -144,9 +240,7 @@ input {
 }
 
 /* Code to allow auto-resizing of editor */
-#editor {
-    position: relative;
-}
+#editor { position: relative; }
 
 #text-area {
     box-sizing: border-box;
@@ -184,7 +278,6 @@ input {
 }
 
 #controls .show-hide {
-    background-image: url('../images/arrow.png');
     width: 11px;
     height: 11px;
     position: absolute;
@@ -259,7 +352,6 @@ input {
     text-align: center;
     line-height: 24px;
     margin-top: 270px;
-    color: #629FB0;
 }
 
 
@@ -377,19 +469,3 @@ input {
 	left: 83.26%;
 }
 
-/* Switch Themes/Colors */
-.switch.blue input:checked + label {
-	color: #15475d;
-}
-
-.switch.blue .switch-button {
-	background-color: #38a3d4;
-}
-
-.switch.yellow .switch-button {
-	background-color: #ccc165;
-}
-
-.switch.yellow input:checked + label {
-	color: #494525;
-}
