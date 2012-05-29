@@ -59,8 +59,7 @@ define([
                   + 'z-index: -2; '
                   + 'padding: 0; '
                   + 'border-style: none; '
-                  + 'background-color: #2D768E;"></div>');
-
+                  + 'background-color: black;"></div>');
 
                 // Select the chosen type
                 view.extend(startingType);
@@ -215,7 +214,10 @@ define([
         },
 
         colorize: function(item, state) {
-            item.animate({
+
+            var schemeName = 'white'
+
+              , scheme = schemeName === 'blue' ? {
                 color:
                     (state === 'select' ? '#0189b0' :
                                           '#ffffff' ),
@@ -223,7 +225,18 @@ define([
                     (state === 'select' ? '#ffffff' :
                     (state === 'hover'  ? '#2ea5c7' :
                                           '#0189b0' ))
-            },{
+            } : {
+                color:
+                    (state === 'select' ? 'red' :
+                    (state === 'hover'  ? 'black' :
+                                          'white' )),
+                backgroundColor:
+                    (state === 'select' ? 'white' :
+                    (state === 'hover'  ? 'red' :
+                                          'black' ))
+            };
+
+            item.animate(scheme, {
                 duration: 200,
                 queue: false
             });
