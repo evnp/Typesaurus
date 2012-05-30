@@ -67,32 +67,35 @@
   accessApi = function(word, response) {
     var processWordData;
     processWordData = function(word, wordStr) {
-      var type;
-      for (type in word) {
-        word.types = process(type);
-      }
-      process(function(type) {
-        var list, string, _results;
-        _results = [];
+      var convert, type;
+      convert = function(type) {
+        var list, string;
         for (list in word[type]) {
-          _results.push((function() {
-            var _i, _len, _ref, _results1;
+          word[type][list] = (function() {
+            var _i, _len, _ref, _results;
             _ref = word[type][list];
-            _results1 = [];
+            _results = [];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               string = _ref[_i];
-              _results1.push(word[type][list] = {
+              _results.push({
                 is: string
               });
             }
-            return _results1;
-          })());
+            return _results;
+          })();
+        }
+        return type;
+      };
+      word.types = (function() {
+        var _results;
+        _results = [];
+        for (type in word) {
+          _results.push(convert(type));
         }
         return _results;
-      });
+      })();
       word.is = wordStr;
       word.rank = 0;
-      console.log(word);
       return word;
     };
     if (apiKey) {
@@ -106,10 +109,10 @@
             });
             response.end(JSON.stringify(wordObject));
             return thesaurus.words.save(wordObject, function(error, saved) {
+              var msg;
               if (error || !saved) {
-                console.error('There was a problem saving a word:');
-                console.log(error);
-                return console.log(wordObject);
+                msg = 'There was a problem saving a word:';
+                return output(msg, error, wordObject);
               }
             });
           } catch (e) {
@@ -151,35 +154,7 @@
     }
   };
 
-  handleWordUpdate = function(request, response) {
-    var source, synonym, synonymQuery, synonymRankInc, type, words;
-    words = processRequest(request);
-    if (word) {
-      source = words.original;
-      synonym = words.replacement;
-      type = words.type;
-      synonymQuery = {
-        is: source
-      };
-      synonymQuery[type + '.is'] = synonym;
-      synonymRankInc = {
-        $inc: {}
-      };
-      synonymRankInc.$inc[type + '.$.rank'] = 1;
-      console.log(synonymQuery);
-      console.log(synonymRankInc);
-      return thesaurus.words.update(synonymQuery, synonymRankInc, function(error, updated) {
-        thesaurus.words.find({
-          is: source
-        }, function(e, result) {
-          return console.log(result);
-        });
-        if (error) {
-          return output('Word not updated', error);
-        }
-      });
-    }
-  };
+  handleWordUpdate = function(request, response) {};
 
   module.exports.handleWordQuery = handleWordQuery;
 
