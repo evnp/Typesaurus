@@ -73,7 +73,7 @@ a                  { color: red; }
 #controls          { color: gray; }
 
 #controls .show-hide{
-    background-image: url('../images/arrow-gray.png');
+    background-image: url('../images/arrow-black.png');
 }
 
 .switch.blue input:checked + label {
