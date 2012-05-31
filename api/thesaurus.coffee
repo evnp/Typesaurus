@@ -48,16 +48,15 @@ accessApi = (word, response) ->
 
     processWordData = (word, wordStr) ->
 
-        word.types = process type for type of word
-
-        process (type) ->
+        # Convert synonym strings to objects
+        convert = (type) ->
             for list of word[type]
-                word[type][list] = is: string for string in word[type][list]
+                word[type][list] = (is: string for string in word[type][list])
+            return type
 
+        word.types = (convert type for type of word)
         word.is = wordStr
         word.rank = 0
-
-        console.log word
 
         return word
 
@@ -76,9 +75,8 @@ accessApi = (word, response) ->
                         thesaurus.words.save wordObject,
                             (error, saved) ->
                                 if error or not saved
-                                    console.error 'There was a problem saving a word:'
-                                    console.log error
-                                    console.log wordObject
+                                    msg = 'There was a problem saving a word:'
+                                    output msg, error, wordObject
 
                     catch e
                         output 'There was a parse error:', e
@@ -115,35 +113,35 @@ handleWordQuery = (request, response) ->
 
 
 handleWordUpdate = (request, response) ->
-    words = processRequest(request)
-
-    if word # Only respond to a correctly formed query strings
-        source = words.original
-        synonym = words.replacement
-        type = words.type
-
-        # Finds synonym on word (if synonym is object
-        synonymQuery = is: source
-        synonymQuery[type + '.is'] = synonym
-
-        # Increments found synonym's rank.
-        # $ operator is used to reference found synonym index
-        # $inc operator increments present value
-        synonymRankInc = $inc: {}
-        synonymRankInc.$inc[type + '.$.rank'] = 1
-
-        console.log synonymQuery
-        console.log synonymRankInc
-
-        thesaurus.words.update synonymQuery, synonymRankInc,
-            (error, updated) ->
-                thesaurus.words.find
-                    is: source
-                , (e, result) ->
-                    console.log result
-
-                if error
-                    output 'Word not updated', error
+    #    words = processRequest(request)
+    #
+    #    if word # Only respond to a correctly formed query strings
+    #        source = words.original
+    #        synonym = words.replacement
+    #        type = words.type
+    #
+    #        # Finds synonym on word (if synonym is object
+    #        synonymQuery = is: source
+    #        synonymQuery[type + '.is'] = synonym
+    #
+    #        # Increments found synonym's rank.
+    #        # $ operator is used to reference found synonym index
+    #        # $inc operator increments present value
+    #        synonymRankInc = $inc: {}
+    #        synonymRankInc.$inc[type + '.$.rank'] = 1
+    #
+    #        console.log synonymQuery
+    #        console.log synonymRankInc
+    #
+    #        thesaurus.words.update synonymQuery, synonymRankInc,
+    #            (error, updated) ->
+    #                thesaurus.words.find
+    #                    is: source
+    #                , (e, result) ->
+    #                    console.log result
+    #
+    #                if error
+    #                    output 'Word not updated', error
 
 
 module.exports.handleWordQuery = handleWordQuery
