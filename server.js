@@ -12,7 +12,7 @@
 
   http.createServer(function(request, response) {
     return request.addListener('end', function() {
-      if (request.url.indexOf('/thesaurus' === -1)) {
+      if (request.url.indexOf('/thesaurus') === -1) {
         return site.serve(request, response);
       } else {
         if (request.method === 'GET') {
