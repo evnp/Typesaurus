@@ -1,6 +1,10 @@
 {
   "name": "typesaurus",
   "subdomain": "typesaurus",
+  "domains": [
+    "typesaur.us",
+    "www.typesaur.us"
+  ],
   "scripts": {
     "start": "server.js"
   },

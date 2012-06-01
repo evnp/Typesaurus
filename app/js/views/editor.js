@@ -169,7 +169,7 @@ define([
               , match = this.textarea.val().match(regex);
 
             if (match) {
-                var replacedText = match[1] + wordStr;
+                var replacedText = match[1] + wordStr + ' ';
                 this.textarea.val(replacedText + match[2]);
                 this.setCaretPosition(replacedText.length);
             } else { this.textarea.focus(); }
