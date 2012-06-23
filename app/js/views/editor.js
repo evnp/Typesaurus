@@ -73,20 +73,11 @@ define([
         setupHotkeys: function () {
             var editor = this;
 
-            this.switchMode(); // Initially defaults to hotkey mode
+            this.switchMode(); // Default to hotkey mode
 
             // Transfer control from texarea to synonym list
             this.textarea.keydown('down', selectFirst);
             this.textarea.keydown('tab',  selectFirst);
-
-            function selectFirst() {
-                var list = $('#0', editor.synonyms.el);
-
-                if (list && list[0]) {
-                    editor.synonyms.select($('ol li:first-child', list), 1, list);
-                    return false;
-                } else { return true; }
-            }
 
             // Transfer control from texarea to synonym list on number key press
             for (var i = 1; i < 6; i++) {
@@ -111,6 +102,15 @@ define([
                 // Covers all character keys
                 if (e.which >= 54 && e.which <= 222) { editor.synonyms.clear(); }
             });
+
+            function selectFirst() {
+                var list = $('#0', editor.synonyms.el);
+
+                if (list && list[0]) {
+                    editor.synonyms.select($('ol li:first-child', list), 1, list);
+                    return false;
+                } else { return true; }
+            }
         },
 
         setupCopyPaste: function () {

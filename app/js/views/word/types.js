@@ -47,7 +47,10 @@ define([
                 // Create Tab Connection
                 synList.css({
                     'border-left-style': 'none',
-                    'left': '+=1px'
+                    'left': '+=1px',
+
+                    // Make sure synList is never shorter than typeList
+                    'min-height': (container.outerHeight() - 1) + 'px'
                 });
                 container.append( '<div ' // Create false right border
                   + 'id="falseBorder" '
