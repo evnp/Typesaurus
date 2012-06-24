@@ -128,15 +128,44 @@ define([
             var editor = this;
 
             this.mode = this.mode === 'hotkey' ? 'auto' : 'hotkey';
-            this.hotkey = this.hotkey || 'shift+space';
 
             if (this.mode === 'hotkey') {
-                this.textarea.keydown('space', function () { editor.synonyms.clear(); });
-                this.textarea.keydown(this.hotkey, function () {
-                    editor.summonList(editor.getWordInfo());
+
+                var spacePressed = false
+                  , timerRunning = false;
+
+                this.textarea.keydown('space', function () {
+                    if (!spacePressed) {
+
+                        var timerLength = 300;
+                        spacePressed = timerRunning = true;
+                        editor.synonyms.clear();
+
+                        // If space isn't released before the timer expires,
+                        // this is considered a "long" space press which will
+                        // activate a synonym list for the word.
+                        setTimeout( function () {
+                            timerRunning = false;
+                            if (spacePressed) {
+                                editor.summonList(editor.getWordInfo());
+                            }
+                        }, timerLength);
+                    }
+
                     return false;
                 });
+
+                // If space is released and the key press timer
+                // is still running, simulate a normal 'space' press.
+                this.textarea.keyup('space', function () {
+                    if (spacePressed && timerRunning) {
+                        editor.insertAfterCaret(' ');
+                    }
+                    spacePressed = false;
+                });
+
             } else if (this.mode === 'auto') {
+                this.textarea.keyup('space', function () { return true; });
                 this.textarea.keydown('space', function () {
                     editor.summonList(editor.getWordInfo(-1));
                 });
@@ -178,6 +207,14 @@ define([
             this.synonyms.context.word.handleReplace(wordStr, type)
         },
 
+        insertAfterCaret: function (str) {
+            var textInfo = this.getTextInfo()
+              , text = textInfo.text
+              , pos  = textInfo.pos;
+
+            this.textarea.val(text.substring(0, pos) + str + text.substring(pos));
+        },
+
         getWordInfo: function (caretOffset) {
             caretOffset = caretOffset || 0;
 
@@ -209,9 +246,10 @@ define([
         },
 
         getLineInfo: function () {
-            var text     = this.textarea.val(),
-                position = this.getCaretPosition(),
-                before   = text.substring(0, position),
+            var textInfo = this.getTextInfo()
+              , text     = textInfo.text
+              , position = textInfo.pos
+              , before   = text.substring(0, position);
 
                 // Get starting index of the line
                 before = text.substring(0, position),
@@ -229,6 +267,13 @@ define([
                 text:     text.substring(start, end),
                 caretPos: position - start,
                 lineNo:   newlines ? newlines.length + 1 : 1
+            };
+        },
+
+        getTextInfo: function () {
+            return {
+                text: this.textarea.val(),
+                pos:  this.getCaretPosition()
             };
         },
 
@@ -281,12 +326,8 @@ define([
         },
 
         onCopy: function () {
-
             this.textarea.focus();
-
-            if (!this.hasSelection()) {
-                this.selectAll();
-            }
+            if (!this.hasSelection()) { this.selectAll(); }
 
             return true;
         },
