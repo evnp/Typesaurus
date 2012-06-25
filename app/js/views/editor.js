@@ -73,6 +73,7 @@ define([
         setupHotkeys: function () {
             var editor = this;
 
+            this.initModes();
             this.switchMode(); // Default to hotkey mode
 
             // Transfer control from texarea to synonym list
@@ -124,22 +125,21 @@ define([
             $(document).keydown(  modifier + '+v', onPaste);
         },
 
-        switchMode: function () {
-            var editor = this;
+        initModes: function () {
+            var editor = this
+              , spacePressed = false
+              , timerRunning = false;
 
-            this.mode = this.mode === 'hotkey' ? 'auto' : 'hotkey';
-
-            if (this.mode === 'hotkey') {
-
-                var spacePressed = false
-                  , timerRunning = false;
-
-                this.textarea.keydown('space', function () {
+            this.spaceHandlers = {
+                down: function () {
                     if (!spacePressed) {
-
-                        var timerLength = 300;
-                        spacePressed = timerRunning = true;
                         editor.synonyms.clear();
+
+                        // Pre-fetch word object to reduce delay
+                        var wordInfo = editor.getWordInfo()
+                          , timerLength = 300;
+
+                        spacePressed = timerRunning = true;
 
                         // If space isn't released before the timer expires,
                         // this is considered a "long" space press which will
@@ -147,43 +147,52 @@ define([
                         setTimeout( function () {
                             timerRunning = false;
                             if (spacePressed) {
-                                editor.summonList(editor.getWordInfo());
+                                editor.summonList(wordInfo);
                             }
                         }, timerLength);
                     }
 
                     return false;
-                });
+                },
 
                 // If space is released and the key press timer
                 // is still running, simulate a normal 'space' press.
-                this.textarea.keyup('space', function () {
+                up: function () {
                     if (spacePressed && timerRunning) {
                         editor.insertAfterCaret(' ');
                     }
                     spacePressed = false;
-                });
+                },
+
+                auto: function () {
+                    editor.summonList(editor.getWordInfo(-1));
+                }
+            };
+        },
+
+        switchMode: function () {
+
+            this.mode = this.mode === 'hotkey' ? 'auto' : 'hotkey';
+
+            if (this.mode === 'hotkey') {
+                this.textarea.unbind('keydown', this.spaceHandlers.auto);
+                this.textarea.keydown( 'space', this.spaceHandlers.down);
+                this.textarea.keyup(   'space', this.spaceHandlers.up);
 
             } else if (this.mode === 'auto') {
-                this.textarea.keyup('space', function () { return true; });
-                this.textarea.keydown('space', function () {
-                    editor.summonList(editor.getWordInfo(-1));
-                });
+                this.textarea.unbind(  'keyup', this.spaceHandlers.up);
+                this.textarea.unbind('keydown', this.spaceHandlers.down);
+                this.textarea.keydown( 'space', this.spaceHandlers.auto);
             }
         },
 
         summonList: function (wordInfo) {
+
+            // Get the synonym view ready for a new list tree
             if (wordInfo) {
-                var editor = this
-                  , word = editor.words.getFrom(wordInfo.word);
-
-                // Get the synonym view ready for a new list tree
-                editor.synonyms.clear();
-                editor.synonyms.context = wordInfo;
-                editor.synonyms.context.wordStr = editor.synonyms.context.word;
-                editor.synonyms.context.word = word;
-
-                editor.synonyms.render(word, 0, wordInfo.x, wordInfo.y);
+                this.synonyms.clear();
+                this.synonyms.context = wordInfo;
+                this.synonyms.render(wordInfo.wordObj, 0, wordInfo.x, wordInfo.y);
             }
         },
 
@@ -204,7 +213,7 @@ define([
             } else { this.textarea.focus(); }
 
             // Update rankings appropriately for the replace operation
-            this.synonyms.context.word.handleReplace(wordStr, type)
+            this.synonyms.context.wordObj.handleReplace(wordStr, type)
         },
 
         insertAfterCaret: function (str) {
@@ -231,6 +240,8 @@ define([
             while (text[end] &&
                    wordChars.test(text[end])) { end++; }
 
+            var word = text.substring(start, end);
+
             return start === end ? null : {
                 line: line,
                 start: start,
@@ -241,7 +252,10 @@ define([
                 y: (line * this.lineHeight) + 4,
 
                 // The word as a string
-                word: text.substring(start, end)
+                wordStr: word,
+
+                // The word object itself
+                wordObj: this.words.getFrom(word)
             };
         },
 
@@ -336,7 +350,7 @@ define([
 /* -- Type Prediction -- */
 
         predictType: function (context) {
-            return context.word.defaultType();
+            return context.wordObj.defaultType();
         },
 
 
