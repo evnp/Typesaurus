@@ -3,13 +3,17 @@ define([
     'underscore',
     'backbone',
     'jqhotkeys',
+    'jqlongkeys',
 
     'collections/words',
     'views/word/synonyms',
     'text!templates/editor.html'
 
-], function ($, _, Backbone, jQueryHotkeys,
-  WordCollection, SynonymView, editorTemplate) {
+], function ($, _, Backbone, jqHotkeys, jqLongkeys,
+
+WordCollection,
+SynonymView,
+editorTemplate) {
 
     var EditorView = Backbone.View.extend({
 
@@ -73,8 +77,8 @@ define([
         setupHotkeys: function () {
             var editor = this;
 
-            this.initModes();
-            this.switchMode(); // Default to hotkey mode
+            // Set up modes - defaults to hotkey
+            this.switchMode();
 
             // Transfer control from texarea to synonym list
             this.textarea.keydown('down', selectFirst);
@@ -125,64 +129,32 @@ define([
             $(document).keydown(  modifier + '+v', onPaste);
         },
 
-        initModes: function () {
-            var editor = this
-              , spacePressed = false
-              , timerRunning = false;
-
-            this.spaceHandlers = {
-                down: function () {
-                    if (!spacePressed) {
-                        editor.synonyms.clear();
-
-                        // Pre-fetch word object to reduce delay
-                        var wordInfo = editor.getWordInfo()
-                          , timerLength = 300;
-
-                        spacePressed = timerRunning = true;
-
-                        // If space isn't released before the timer expires,
-                        // this is considered a "long" space press which will
-                        // activate a synonym list for the word.
-                        setTimeout( function () {
-                            timerRunning = false;
-                            if (spacePressed) {
-                                editor.summonList(wordInfo);
-                            }
-                        }, timerLength);
-                    }
-
-                    return false;
-                },
-
-                // If space is released and the key press timer
-                // is still running, simulate a normal 'space' press.
-                up: function () {
-                    if (spacePressed && timerRunning) {
-                        editor.insertAfterCaret(' ');
-                    }
-                    spacePressed = false;
-                },
-
-                auto: function () {
-                    editor.summonList(editor.getWordInfo(-1));
-                }
-            };
-        },
-
         switchMode: function () {
 
             this.mode = this.mode === 'hotkey' ? 'auto' : 'hotkey';
 
+            var editor = this
+              , wordInfo
+              , prefetchWord = function () { wordInfo = editor.getWordInfo(); }
+              , summonList   = function () { editor.summonList(wordInfo);     }
+              , insertSpace  = function () { editor.insertAfterCaret(' ');    }
+              , autoSummonList = function () {
+                    editor.summonList(editor.getWordInfo(-1)); }
+              ;
+
             if (this.mode === 'hotkey') {
-                this.textarea.unbind('keydown', this.spaceHandlers.auto);
-                this.textarea.keydown( 'space', this.spaceHandlers.down);
-                this.textarea.keyup(   'space', this.spaceHandlers.up);
+                console.log('unbinding');
+                this.textarea.unbind('keyup', autoSummonList);
+                this.textarea.bind('longkeydown', {
+                    key:         'space',
+                    duration:     300,
+                    before:       prefetchWord,
+                    onShortPress: insertSpace
+                },  summonList);*/
 
             } else if (this.mode === 'auto') {
-                this.textarea.unbind(  'keyup', this.spaceHandlers.up);
-                this.textarea.unbind('keydown', this.spaceHandlers.down);
-                this.textarea.keydown( 'space', this.spaceHandlers.auto);
+                this.textarea.unbind('longkeydown', summonList);
+                this.textarea.bind('keyup', 'space', autoSummonList);
             }
         },
 
