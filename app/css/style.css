@@ -136,6 +136,8 @@ textarea, #text-copy, #line-copy, #header {
 
 .bold { font-weight: 500; }
 
+/* Adjust title kerning */
+#title .kerning { letter-spacing: -.07em; }
 
 
 
