@@ -123,7 +123,10 @@ input              { color: black;
 
 /* --- Font --- */
 
-body { font-family: "futura-pt"; font-weight: 300; }
+body {
+    font-family: "futura-pt", "Droid Sans", Helvetica, Arial;
+    font-weight: 300;
+}
 a { text-decoration: none; }
 textarea, #text-copy, #line-copy, #header {
             font-family: inherit;
