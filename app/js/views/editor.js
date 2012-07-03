@@ -137,7 +137,10 @@ editorTemplate) {
               , wordInfo
               , prefetchWord = function () { wordInfo = editor.getWordInfo(); }
               , summonList   = function () { editor.summonList(wordInfo);     }
-              , insertSpace  = function () { editor.insertAfterCaret(' ');    }
+              , insertSpace  = function () { 
+                    editor.synonyms.clear();
+                    editor.insertAfterCaret(' ');
+                }
               , autoSummonList = function () {
                     editor.summonList(editor.getWordInfo(-1));
                 }
@@ -145,13 +148,13 @@ editorTemplate) {
 
             if (this.mode === 'hotkey') {
                 this.textarea.off('keyup.space.summon');
-                this.textarea.on('longkeydown.space', {
+                this.textarea.on('longkeydown.space.summon', {
                     onDown:  prefetchWord,
                     onShort: insertSpace
                 },  summonList);
 
             } else if (this.mode === 'auto') {
-                this.textarea.off('longkeydown.space');
+                this.textarea.off('longkeydown.space.summon');
                 this.textarea.on('keyup.space.summon', autoSummonList);
             }
         },
