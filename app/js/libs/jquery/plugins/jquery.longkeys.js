@@ -5,49 +5,60 @@
         var customEvent = 'long' + type;
 
         $.event.special[customEvent] = {
-            setup: function (data) {
 
+            add: function (binding) {
                 var el = $(this)
+                  , ns = binding.namespace ? '.' + binding.namespace : ''
+
+                  , data = binding.data
+                  , onKeyDown    = data.onDown  || function () {}
+                  , onShortPress = data.onShort || function () {}
+                  , reqPressLen  = data.length  || 300 // Default
+
                   , keyPressed   = false
                   , timerRunning = false
-                  , keyCode = null
-
-                    // True if using jQuery Hotkeys
-                  , jQueryHotkeys = Boolean($.hotkeys && data.key);
+                  , keyCode      = null
+                  ;
 
                 // Bind the events: (keydown|keypress) and keyup.
-                // If the event is for a specific key,
-                // use jquery.hotkeys syntax for event binding.
-                el[type].apply(el, jQueryHotkeys ? [data.key, down] : [down]);
-                el.keyup.apply(el, jQueryHotkeys ? [data.key,  up ] : [ up ]);
-
-                // Store the handlers for later unbinding
-                el.data('handlers', { down: down, up: up });
+                el.on( type   + ns, down);
+                el.on('keyup' + ns,  up );
 
                 function down(e) {
+
+                    // Keydown auto-repeats; only run on first trigger
                     if (keyPressed === false) {
 
-                        // Execute pre-delay callback
-                        if (data.before) data.before();
+                        onKeyDown(); // Execute pre-delay callback
 
-                        // If not using jQuery Hotkeys, cache the key code
-                        // to make sure down and up handlers use the same key
-                        if (!jQueryHotkeys) keyCode = e.which;
+                        // Store the keycode to ensure down
+                        // and up handlers use the same key.
+                        keyCode = e.which;
 
                         keyPressed = timerRunning = true;
 
                         setTimeout(function () {
                             timerRunning = false;
-                            if (keyPressed) el.trigger(customEvent);
-                        }, data.duration);
+
+                            // If the key is still pressed when the
+                            // timer expires, fire the custom event.
+                            if (keyPressed) el.trigger(customEvent + ns);
+
+                        }, reqPressLen); // Defaults to 300
                     }
 
                     return false;
                 }
 
                 function up(e) {
-                    if (jQueryHotkeys || (e.which === keyCode)) {
-                        if (keyPressed && timerRunning) data.onShortPress();
+
+                    // Make sure the released key is the same as used by 'down'
+                    if (e.which === keyCode) {
+
+                        // If the timer is still running when the key
+                        // is released, execute the fallback function.
+                        if (timerRunning) onShortPress();
+
                         keyPressed = false;
                         keyCode = null;
                     }
@@ -56,12 +67,12 @@
                 }
             },
 
-            teardown: function () {
-                var handlers = el.data('handlers');
-                if (handlers) {
-                    if (handlers.down) $(this).unbind(type,  handlers.down);
-                    if (handlers.up)   $(this).unbind(keyup, handlers.up);
-                }
+            remove: function (binding) {
+                var el = $(this)
+                  , ns = binding.namespace ? '.' + binding.namespace : '';
+
+                el.off( type   + ns);
+                el.off('keyup' + ns);
             }
         }
     });

@@ -81,12 +81,12 @@ editorTemplate) {
             this.switchMode();
 
             // Transfer control from texarea to synonym list
-            this.textarea.keydown('down', selectFirst);
-            this.textarea.keydown('tab',  selectFirst);
+            this.textarea.on('keydown.down', selectFirst);
+            this.textarea.on('keydown.tab',  selectFirst);
 
             // Transfer control from texarea to synonym list on number key press
             for (var i = 1; i < 6; i++) {
-                this.textarea.keydown(i.toString(), function (e) {
+                this.textarea.on('keydown.' + i.toString(), function (e) {
                     var list = $('#0', editor.synonyms.el);
 
                     if (list && list[0]) {
@@ -99,9 +99,9 @@ editorTemplate) {
                 });
             }
 
-            this.textarea.keydown('space',     function () { editor.synonyms.clear; });
-            this.textarea.keydown('return',    function () { editor.synonyms.clear; });
-            this.textarea.keydown('backspace', function () { editor.synonyms.clear; });
+            this.textarea.on('keydown.space',     function () { editor.synonyms.clear; });
+            this.textarea.on('keydown.return',    function () { editor.synonyms.clear; });
+            this.textarea.on('keydown.backspace', function () { editor.synonyms.clear; });
 
             this.textarea.keydown(function (e) {
                 // Covers all character keys
@@ -124,9 +124,9 @@ editorTemplate) {
               , onCopy   = function () { editor.onCopy(); }
               , onPaste  = function () { editor.textarea.focus(); return true; };
 
-            this.textarea.keydown(modifier + '+c', onCopy);
-            $(document).keydown(  modifier + '+c', onCopy);
-            $(document).keydown(  modifier + '+v', onPaste);
+            this.textarea.on('keydown.' + modifier + '+c', onCopy);
+            $(document).on(  'keydown.' + modifier + '+c', onCopy);
+            $(document).on(  'keydown.' + modifier + '+v', onPaste);
         },
 
         switchMode: function () {
@@ -139,22 +139,20 @@ editorTemplate) {
               , summonList   = function () { editor.summonList(wordInfo);     }
               , insertSpace  = function () { editor.insertAfterCaret(' ');    }
               , autoSummonList = function () {
-                    editor.summonList(editor.getWordInfo(-1)); }
+                    editor.summonList(editor.getWordInfo(-1));
+                }
               ;
 
             if (this.mode === 'hotkey') {
-                console.log('unbinding');
-                this.textarea.unbind('keyup', autoSummonList);
-                this.textarea.bind('longkeydown', {
-                    key:         'space',
-                    duration:     300,
-                    before:       prefetchWord,
-                    onShortPress: insertSpace
-                },  summonList);*/
+                this.textarea.off('keyup.space.summon');
+                this.textarea.on('longkeydown.space', {
+                    onDown:  prefetchWord,
+                    onShort: insertSpace
+                },  summonList);
 
             } else if (this.mode === 'auto') {
-                this.textarea.unbind('longkeydown', summonList);
-                this.textarea.bind('keyup', 'space', autoSummonList);
+                this.textarea.off('longkeydown.space');
+                this.textarea.on('keyup.space.summon', autoSummonList);
             }
         },
 
