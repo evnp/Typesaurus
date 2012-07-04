@@ -1,3 +1,11 @@
+/*
+ * jquery.longkeys
+ * duration-specific key events in jQuery
+ *
+ * Copyright 2012, Evan Purcer
+ * Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
+ */
+
 (function ($) {
 
     $.each(['keydown', 'keypress'], function (i, type) {
@@ -10,7 +18,7 @@
                 var el = $(this)
                   , ns = binding.namespace ? '.' + binding.namespace : ''
 
-                  , data = binding.data
+                  , data         = binding.data || {}
                   , onKeyDown    = data.onDown  || function () {}
                   , onShortPress = data.onShort || function () {}
                   , reqPressLen  = data.length  || 300 // Default
