@@ -19,8 +19,18 @@ define([
         render: function(){
             this.$el.html(mainTemplate);
 
-            (new ControlsView).render((new EditorView).render());
-            (new DefinitionView).render();
+            var underMaintenance = true;
+            if (underMaintenance) {
+                this.$('#controls').html(
+                    '<p>&nbsp;&nbsp;is currently under maintenance,' +
+                    ' and will be back up shortly.</p>'
+                );
+                this.$('#credits').hide();
+
+            } else {
+                (new ControlsView).render((new EditorView).render());
+                (new DefinitionView).render();
+            }
         }
     });
 
