@@ -64,7 +64,6 @@ body {               color: white;
           background-color: white; }
 a                  { color: red; }
 
-#title             { color: red; }
 #header            { color: black; }
 
 #text-area         { color: black;
@@ -140,7 +139,24 @@ textarea, #text-copy, #line-copy, #header {
 .bold { font-weight: 500; }
 
 /* Adjust title kerning */
-#title .kerning { letter-spacing: -.07em; }
+/*#title .kerning { letter-spacing: -.07em; }*/
+
+/* Title Shadowing Effects */
+#title .type {
+    font-family: Georgia;
+    font-size: 59px;
+    color: transparent;
+    text-shadow: -1px 1px 3px #0c3047;
+    display: inline-block;
+}
+#title {
+    display: inline-block;
+    color: #0C3047;
+    text-shadow: 0px 0px 3px #0c3047;
+    letter-spacing: 0.05em;
+    margin-right: 3px;
+}
+
 
 
 
