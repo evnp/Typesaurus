@@ -12,7 +12,7 @@ define([
         el: '#controls',
 
         initialize: function () {
-            this.controlsHidden = false;
+            this.controlsHidden = true;
             this.mode = 'hotkey';
         },
 
@@ -42,6 +42,16 @@ define([
               , label = this.$('#show-label')
               , content = view.$('.content *');
 
+            // Hide controls initially
+            arrow.css('text-indent', -90);
+            var value = 'rotate(-90deg)';
+            arrow.css('-webkit-transform', value);
+            arrow.css('-moz-transform',    value);
+            arrow.css('transform',         value);
+            content.hide();
+            $('#show-label').show();
+
+            // Toggle controls show/hide on click
             $('.show-hide, #show-label').click(function (e) {
                 var newAngle = parseFloat(arrow.css('text-indent')) ? 0 : -90
 
