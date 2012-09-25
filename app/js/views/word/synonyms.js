@@ -88,21 +88,21 @@ define([
         setUpNavigation: function (list, position) {
 
             // Arrow Keys
-            $(list).keydown('up',    selectPrev);
-            $(list).keydown('down',  selectNext);
-            $(list).keydown('right', lookUpSelected);
-            $(list).keydown('left',  onLeftArrow);
+            $(list).on('keydown.up',    selectPrev);
+            $(list).on('keydown.down',  selectNext);
+            $(list).on('keydown.right', lookUpSelected);
+            $(list).on('keydown.left',  onLeftArrow);
 
             // Number Keys
             for (var i = 1; i < 6; i++) {
-                $(list).keydown(i.toString(), onNumPress);
+                $(list).on('keydown.' + i.toString(), onNumPress);
             }
 
             // Other Keys
-            $(list).keydown('space',  returnToTextarea);
-            $(list).keydown('return', insertSelected);
-            $(list).keydown('tab',    lookUpSelected);
-            $(list).keydown('shift+tab', closeList);
+            $(list).on('keydown.space',  returnToTextarea);
+            $(list).on('keydown.return', insertSelected);
+            $(list).on('keydown.tab',    lookUpSelected);
+            $(list).on('keydown.shift+tab', closeList);
 
             // Mouse
             $(list).click(lookUpSelected);
@@ -239,7 +239,7 @@ define([
             this.sel.item = item;
             this.sel.rank = rank;
 
-            if (list) { this.sel.list = list; }
+            if (list) this.sel.list = list;
             this.sel.list.focus();
         },
 
