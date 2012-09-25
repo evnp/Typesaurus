@@ -19,7 +19,7 @@ define([
         render: function(){
             this.$el.html(mainTemplate);
 
-            var underMaintenance = true;
+            var underMaintenance = false;
             if (underMaintenance) {
                 this.$('#controls').html(
                     '<p>&nbsp;&nbsp;is currently under maintenance,' +
