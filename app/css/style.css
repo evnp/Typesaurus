@@ -1,5 +1,5 @@
 /* --- Color Scheme --- */
-/* http://colorschemedesigner.com/#3o31IP.--smIg */
+/* http://colorschemedesigner.com/#3v11T0MRRw0w0 */
 
 /* - Blue - */
 /*
@@ -62,55 +62,55 @@ input              { color: #0189B0;
 
 body {               color: white;
           background-color: white; }
-a                  { color: red; }
+a                  { color: #015b95; }
 
 #header            { color: black; }
 
 #text-area         { color: black;
           background-color: white; }
 
-#controls          { color: gray; }
+#controls          { color: #9fa6aa; }
 
 #controls .show-hide{
     background-image: url('../images/arrow-black.png');
 }
 
 .switch.blue input:checked + label {
-                     color: red; }
+                     color: #015b95; }
 
 .switch.blue .switch-button {
           background-color: white;}
 
 input              { color: black;
           background-color: white;
-          border: 1px solid red;}
+          border: 1px solid #0c3047;}
 
-.synonyms          { color: red;
+.synonyms          { color: #015b95;
           background-color: white;
           border: 1px solid black; }
 
 .synonyms .selected {
                      color: black;
-          background-color: red; }
+          background-color: #eff1f2; }
 
 .synonyms .word-types div {
-                     color: white;
+                     color: black;
           border: 1px solid black;
-          background-color: black; }
+          background-color: #eff1f2; }
 
-#instructions      { color: gray; }
+#instructions      { color: #9fa6aa; }
 
 #definitions     { display: none;
-                     color: red; }
+                     color: #0c3047; }
 
 #definitions.text  { color: black; }
 
-#credits           { color: gray; }
+#credits           { color: #9fa6aa; }
 
 
 ::-webkit-input-placeholder {
-                     color: black; }
-:-moz-placeholder  { color: black; }
+                     color: #d8dee1; }
+:-moz-placeholder  { color: #d8dee1; }
 
 .dark { color: black; }
 
@@ -371,11 +371,16 @@ input {
 /* Credits */
 
 #credits {
-    text-align: center;
+    position: fixed;
+    bottom: 6px;
+    right: 12px;
+    text-align: right;
     line-height: 24px;
     margin-top: 270px;
 }
-
+#credits .last {
+    margin-right: 59px;
+}
 
 /* Pure CSS Toggle Switch - https://github.com/ghinda/css-toggle-switch/blob/gh-pages/checkbox/checkbox.css */
 .switch {

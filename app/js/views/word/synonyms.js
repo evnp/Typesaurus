@@ -27,7 +27,7 @@ define([
             // source word for the current tree of lists.
         },
 
-        render: function(word, level, x, y){
+        render: function(word, level, position){
             var view = this;
 
             // Create list information cache
@@ -47,12 +47,12 @@ define([
 
             // Position the list
             list.css({
-                'left': x,
-                'top' : y
+                'left': position.x,
+                'top' : position.y
             });
 
             // Set up navigation on the list
-            this.setUpNavigation(list, x, y);
+            this.setUpNavigation(list, position);
 
             // Populate the list:
             // If the word already has types, it is ready to be loaded from.
@@ -85,7 +85,7 @@ define([
 
     /* * Navigation * */
 
-        setUpNavigation: function (list, x, y) {
+        setUpNavigation: function (list, position) {
 
             // Arrow Keys
             $(list).keydown('up',    selectPrev);
@@ -160,7 +160,7 @@ define([
                     view.lookUp(item, view.sel.rank, {
                         width: list.width(),
                         level: level,
-                        x: x, y: y
+                        pos:   position
                     });
                 }
                 return false;
@@ -263,12 +263,14 @@ define([
         lookUp: function(item, rank, listData) {
             this.clear(listData.level + 1); // Clear all lower lists
 
-            var list = this.render(this.editor.words.getFrom(this.getWordStr(item)),
-                                   listData.level + 1,
-                                   listData.x + listData.width + 1,
-                                   listData.y + ((rank - 1) * item.height()));
+            var word = this.editor.words.getFrom(this.getWordStr(item))
+              , level = listData.level + 1
+              , pos = {
+                  x: listData.pos.x + listData.width + 1,
+                  y: listData.pos.y + ((rank - 1) * item.height())
+              };
 
-            this.selectFirst(list);
+            this.selectFirst(this.render(word, level, pos));
         },
 
 
@@ -388,7 +390,7 @@ define([
             });
 
             // Add the source word
-            words.push(this.context.wordStr);
+            words.push(this.context.str);
             return words;
         }
     });

@@ -4,12 +4,13 @@ define([
     'backbone',
     'jqhotkeys',
     'jqlongkeys',
+    'areagami',
 
     'collections/words',
     'views/word/synonyms',
     'text!templates/editor.html'
 
-], function ($, _, Backbone, jqHotkeys, jqLongkeys,
+], function ($, _, Backbone, jqHotkeys, jqLongkeys, areagami,
 
 WordCollection,
 SynonymView,
@@ -137,9 +138,9 @@ editorTemplate) {
               , wordInfo
               , prefetchWord = function () { wordInfo = editor.getWordInfo(); }
               , summonList   = function () { editor.summonList(wordInfo);     }
-              , insertSpace  = function () { 
+              , insertSpace  = function () {
                     editor.synonyms.clear();
-                    editor.insertAfterCaret(' ');
+                    editor.textarea.gami('insert', ' ');
                 }
               , autoSummonList = function () {
                     editor.summonList(editor.getWordInfo(-1));
@@ -160,128 +161,32 @@ editorTemplate) {
         },
 
         summonList: function (wordInfo) {
-
-            // Get the synonym view ready for a new list tree
-            if (wordInfo) {
+            if (wordInfo) { // Get the synonym view ready for a new list tree
                 this.synonyms.clear();
                 this.synonyms.context = wordInfo;
-                this.synonyms.render(wordInfo.wordObj, 0, wordInfo.x, wordInfo.y);
+                this.synonyms.render(wordInfo.obj, 0, wordInfo.pos);
             }
         },
 
-        insert: function (wordStr, type) {
-            var regex = new RegExp(
-                    '((?:.*[\n]){' +
-                    (this.synonyms.context.line - 1).toString() +
-                    '}.{' + this.synonyms.context.start + '})' +
-                     this.synonyms.context.wordStr +
-                    '([\\s\\S]*)'
-                )
-              , match = this.textarea.val().match(regex);
-
-            if (match) {
-                var replacedText = match[1] + wordStr + ' ';
-                this.textarea.val(replacedText + match[2]);
-                this.setCaretPosition(replacedText.length);
-            } else { this.textarea.focus(); }
-
+        insert: function (word, type) {
+            this.textarea.gami('replaceWord', word);
+            this.synonyms.context.obj.handleReplace(word, type);
             // Update rankings appropriately for the replace operation
-            this.synonyms.context.wordObj.handleReplace(wordStr, type)
         },
 
-        insertAfterCaret: function (str) {
-            var textInfo = this.getTextInfo()
-              , text = textInfo.text
-              , pos  = textInfo.pos;
+        getWordInfo: function (offset) {
+            offset = offset || 0;
 
-            this.textarea.val(text.substring(0, pos) + str + text.substring(pos));
-        },
-
-        getWordInfo: function (caretOffset) {
-            caretOffset = caretOffset || 0;
-
-            var lineInfo = this.getLineInfo()
-              , line = lineInfo.lineNo
-              , text = lineInfo.text
-              , start = end = lineInfo.caretPos + caretOffset
-              , wordChars = /[a-zA-Z'-]/;
-
-            // Get the start and end boundries of the word
-            while (text[start - 1] &&
-                   wordChars.test(text[start - 1])) { start--; }
-
-            while (text[end] &&
-                   wordChars.test(text[end])) { end++; }
-
-            var word = text.substring(start, end);
-
-            return start === end ? null : {
-                line: line,
-                start: start,
-
-                // The coordinates of the word in the editor
-                // y coordinate is the width of text before the word
-                x: this.getTextWidth(text.slice(0, start)),
-                y: (line * this.lineHeight) + 4,
-
-                // The word as a string
-                wordStr: word,
-
-                // The word object itself
-                wordObj: this.words.getFrom(word)
-            };
-        },
-
-        getLineInfo: function () {
-            var textInfo = this.getTextInfo()
-              , text     = textInfo.text
-              , position = textInfo.pos
-              , before   = text.substring(0, position);
-
-                // Get starting index of the line
-                before = text.substring(0, position),
-                start = before.search(/\n.*$/) + 1,
-
-                // Get ending index of the line
-                after = text.substring(position),
-                index = after.indexOf('\n'),
-                end = (index !== -1 ? index : after.length) + position,
-
-                // Get the number of the line
-                newlines = before.match(/\n/g);
+            var area = this.textarea
+              , word = area.gami('word', offset);
 
             return {
-                text:     text.substring(start, end),
-                caretPos: position - start,
-                lineNo:   newlines ? newlines.length + 1 : 1
+                line:  area.gami('lineNo',        offset),
+                start: area.gami('lineWordStart', offset),
+                pos:   area.gami('wordXY',        offset),
+                obj:   this.words.getFrom(word),
+                str:   word
             };
-        },
-
-        getTextInfo: function () {
-            return {
-                text: this.textarea.val(),
-                pos:  this.getCaretPosition()
-            };
-        },
-
-        // Gets the editor caret position by line and character
-        getCaretPosition: function () {
-            var pos = 0
-              , input = this.textarea.el;
-
-            // IE Support
-            if (document.selection) {
-                input.focus();
-                var sel = document.selection.createRange();
-                var selLen = document.selection.createRange().text.length;
-                sel.moveStart('character', -input.value.length);
-                pos = sel.text.length - selLen;
-
-            } else if (input.selectionStart || input.selectionStart == '0') {
-                pos = input.selectionStart;
-            }
-
-            return pos;
         },
 
         // Sets the editor caret position by line and character
@@ -323,7 +228,7 @@ editorTemplate) {
 /* -- Type Prediction -- */
 
         predictType: function (context) {
-            return context.wordObj.defaultType();
+            return context.obj.defaultType();
         },
 
 
@@ -337,10 +242,6 @@ editorTemplate) {
 
                    // All other browsers
                    input.selectionStart !== input.selectionEnd;
-        },
-
-        getTextWidth: function (text) {
-            return this.$('#line-copy').html(text).width();
         },
 
         isOSX: function () {

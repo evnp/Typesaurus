@@ -230,13 +230,13 @@ define([
                                           '#0189b0' ))
             } : {
                 color:
-                    (state === 'select' ? 'red' :
-                    (state === 'hover'  ? 'black' :
-                                          'white' )),
+                    (state === 'select' ? '#015b95' :
+                    (state === 'hover'  ? 'white' :
+                                          'black' )),
                 backgroundColor:
                     (state === 'select' ? 'white' :
-                    (state === 'hover'  ? 'red' :
-                                          'black' ))
+                    (state === 'hover'  ? 'black' :
+                                          '#eff1f2' ))
             };
 
             item.animate(scheme, {
