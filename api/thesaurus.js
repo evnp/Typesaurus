@@ -28,7 +28,7 @@
     try {
       cfg = JSON.parse(fs.readFileSync(path).toString());
       if (process.env.NODE_ENV !== 'production') {
-        cfg.db_url = 'thesaurus';
+        //cfg.db_url = 'thesaurus';
       }
       return cfg;
     } catch (e) {
