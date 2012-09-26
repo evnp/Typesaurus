@@ -170,8 +170,12 @@ editorTemplate) {
 
         insert: function (word, type) {
             this.textarea.gami('replaceWord', word);
-            this.synonyms.context.obj.handleReplace(word, type);
+            this.setCaretPosition(this.textarea.gami('wordEnd'));
+            this.textarea.gami('insert', ' ');
+            this.textarea.focus();
+
             // Update rankings appropriately for the replace operation
+            this.synonyms.context.obj.handleReplace(word, type);
         },
 
         getWordInfo: function (offset) {
