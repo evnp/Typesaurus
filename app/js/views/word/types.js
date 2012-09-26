@@ -119,26 +119,26 @@ define([
                 return switchToType($(e.target, synList));
             });
 
-            this.$el.keydown('down', function () {
+            this.$el.on('keydown.down', function () {
                 var item = view.item.next();
 
                 switchToType(item);
                 return false;
             });
 
-            this.$el.keydown('up', function () {
+            this.$el.on('keydown.up', function () {
                 var item = view.item.prev();
 
                 switchToType(item);
                 return false;
             });
 
-            this.$el.keydown('right', function () {
+            this.$el.on('keydown.right', function () {
                 synView.select($('ol li:first-child', synList), 1, synList);
                 return false;
             });
 
-            this.$el.keydown('left', function () { return false; });
+            this.$el.on('keydown.left', function () { return false; });
 
             this.$el.blur(function () {
                 view.extend(view.item);
